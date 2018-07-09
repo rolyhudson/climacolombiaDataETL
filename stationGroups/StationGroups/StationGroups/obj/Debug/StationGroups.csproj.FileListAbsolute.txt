@@ -1,0 +1,11 @@
+D:\WORK\piloto\Climate\ClimateDataETL\stationGroups\StationGroups\StationGroups\bin\Debug\StationGroups.exe.config
+D:\WORK\piloto\Climate\ClimateDataETL\stationGroups\StationGroups\StationGroups\obj\Debug\StationGroups.csprojResolveAssemblyReference.cache
+D:\WORK\piloto\Climate\ClimateDataETL\stationGroups\StationGroups\StationGroups\obj\Debug\StationGroups.Form1.resources
+D:\WORK\piloto\Climate\ClimateDataETL\stationGroups\StationGroups\StationGroups\obj\Debug\StationGroups.Properties.Resources.resources
+D:\WORK\piloto\Climate\ClimateDataETL\stationGroups\StationGroups\StationGroups\obj\Debug\StationGroups.csproj.GenerateResource.Cache
+D:\WORK\piloto\Climate\ClimateDataETL\stationGroups\StationGroups\StationGroups\bin\Debug\StationGroups.exe
+D:\WORK\piloto\Climate\ClimateDataETL\stationGroups\StationGroups\StationGroups\bin\Debug\StationGroups.pdb
+D:\WORK\piloto\Climate\ClimateDataETL\stationGroups\StationGroups\StationGroups\obj\Debug\StationGroups.exe
+D:\WORK\piloto\Climate\ClimateDataETL\stationGroups\StationGroups\StationGroups\obj\Debug\StationGroups.pdb
+D:\WORK\piloto\Climate\ClimateDataETL\stationGroups\StationGroups\StationGroups\bin\Debug\Newtonsoft.Json.dll
+D:\WORK\piloto\Climate\ClimateDataETL\stationGroups\StationGroups\StationGroups\bin\Debug\Newtonsoft.Json.xml

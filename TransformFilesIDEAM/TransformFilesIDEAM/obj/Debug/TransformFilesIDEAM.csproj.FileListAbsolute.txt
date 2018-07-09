@@ -1,0 +1,9 @@
+D:\WORK\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\bin\Debug\TransformFilesIDEAM.exe.config
+D:\WORK\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\bin\Debug\TransformFilesIDEAM.exe
+D:\WORK\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\bin\Debug\TransformFilesIDEAM.pdb
+D:\WORK\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\obj\Debug\TransformFilesIDEAM.csprojResolveAssemblyReference.cache
+D:\WORK\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\obj\Debug\TransformFilesIDEAM.Form1.resources
+D:\WORK\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\obj\Debug\TransformFilesIDEAM.Properties.Resources.resources
+D:\WORK\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\obj\Debug\TransformFilesIDEAM.csproj.GenerateResource.Cache
+D:\WORK\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\obj\Debug\TransformFilesIDEAM.exe
+D:\WORK\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\obj\Debug\TransformFilesIDEAM.pdb
