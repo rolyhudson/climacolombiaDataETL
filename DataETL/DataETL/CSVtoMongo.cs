@@ -99,5 +99,10 @@ namespace DataETL
             get;
             set;
         }
+        public string processNote
+        {
+            get;
+            set;
+        }
     }
 }

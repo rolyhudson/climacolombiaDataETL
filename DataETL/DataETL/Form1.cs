@@ -16,7 +16,11 @@ namespace DataETL
         {
             InitializeComponent();
         }
-
+        private void syntheticYear(object sender, EventArgs e)
+        {
+            CityYearBuilder cyb = new CityYearBuilder();
+            cyb.averageYear();
+        }
         private void button1_Click(object sender, EventArgs e)
         {
             Reader reader = new Reader();
@@ -69,14 +73,18 @@ namespace DataETL
         }
         private void setGroups(object sender, EventArgs e)
         {
-            StationGrouping sg = new StationGrouping();
+            StationGrouping sg = new StationGrouping(false);
             
         }
         private void removePACollections(object sender, EventArgs e)
         {
-            MongoTools.removeCollectionsAnnual();
+            MongoTools.removeCollectionsAverage();
         }
-
+        private void convertTenMinuteCollections(object sender, EventArgs e)
+        {
+            TenMinuteConversion tmc = new TenMinuteConversion();
+            tmc.convert();
+        }
         private void loadStations(object sender, EventArgs e)
         {
             StationLoad sl = new StationLoad();

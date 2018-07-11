@@ -75,6 +75,21 @@ namespace DataETL
                 }
             }
         }
+        public static void removeCollectionsAverage()
+        {
+            IMongoDatabase db = MongoTools.connect("mongodb://localhost", "climaColombia");
+            //clean up bog buc with PA variable
+            List<string> collNames = MongoTools.collectionNames(db);
+            foreach (string collection in collNames)
+            {
+                if (collection.Contains("average"))
+                {
+                    var coll = db.GetCollection<BsonDocument>(collection);
+                    var t = coll.Find(new BsonDocument()).ToList();
+                    db.DropCollection(collection);
+                }
+            }
+        }
         public static List<StationSummary> getCollectionAsList(string collectionname)
         {
             IMongoDatabase db = MongoTools.connect("mongodb://localhost", "climaColombia");
@@ -86,7 +101,7 @@ namespace DataETL
         }
         public static void storeSummaryCollectionName(IMongoDatabase db,string nametostore)
         {
-            var collection = db.GetCollection<BsonDocument>("summaryCollectionNames");
+            var collection = db.GetCollection<BsonDocument>("collectionNamesSummaries");
             var document = new BsonDocument
             {
                 {"name",nametostore},

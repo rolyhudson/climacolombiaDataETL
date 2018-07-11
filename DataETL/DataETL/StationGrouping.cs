@@ -22,20 +22,23 @@ namespace DataETL
         List<StationGroup> stationsByRegion = new List<StationGroup>();
         List<StationGroup> stationsByCity = new List<StationGroup>();
         IMongoDatabase db;
-        public StationGrouping()
+        public StationGrouping(bool allideam)
         {
             db = MongoTools.connect("mongodb://localhost", "climaColombia");
             getData();
-            makeGroups();
+            if (allideam) makeGroupsALLIDEAM();
+            else makeGroups();
             outputJSON();
-            storeInMongo();
+            //storeInMongo();
             //writeStationCoords();
+
         }
         private void storeInMongo()
         {
             insertManyRecord("regionGroups", stationsByRegion);
             insertManyRecord("cityGroups", stationsByCity);
         }
+        
         public void getData()
         {
             cities = MapTools.readCities();
@@ -43,7 +46,7 @@ namespace DataETL
             //get the city's region
             getCityRegionName();
             //gets all the stations for which we have data
-            getStationsFromDB();
+            getStationsFromDB(db);
             //gets the full list of meta data for all stations NOAA and IDEAM
             stations = getAllStationsFromDB(db);
         }
@@ -53,6 +56,13 @@ namespace DataETL
             setRegionalGroups();
             getCityGroups();
             getRegionGroups();
+        }
+        public void makeGroupsALLIDEAM()
+        {
+            setCityGroups();
+            setRegionalGroups();
+            getAllIDEAMCityGroups();
+            getAllIDEAMRegionGroups();
         }
         public void outputJSON()
         {
@@ -83,12 +93,12 @@ namespace DataETL
             f.Start();
 
         }
-        private void getStationsFromDB()
+        public static List<StationSummary> getStationsFromDB(IMongoDatabase db)
         {
             //record of the stations for which we have data
             var coll = db.GetCollection<StationSummary>("annualStationSummary_2018_7_3_14_6_5");
-            stationsummarys = coll.Find(FilterDefinition<StationSummary>.Empty).ToList();
-            
+            var stationsummarys = coll.Find(FilterDefinition<StationSummary>.Empty).ToList();
+            return stationsummarys;
         }
         private void writeStationCoords()
         {
@@ -151,6 +161,33 @@ namespace DataETL
                 }
             }
         }
+        private void getAllIDEAMCityGroups()
+        {
+            foreach (StationGroup cg in stationsByCity)
+            {
+                //point as geocoord lat lon
+                var city = cities.Find(x => x.name == cg.name);
+                var cityCoord = new GeoCoordinate(city.location[1], city.location[0]);
+                double dist = 0;
+
+                double eleDiff = 0;
+
+                foreach (Station s in stations)
+                {
+                    //get the ref station details
+                    
+                    //find within radius altitude
+
+                    var sCoord = new GeoCoordinate(s.latitude, s.longitude);
+                    dist = cityCoord.GetDistanceTo(sCoord);
+                    eleDiff = city.elevation - s.elevation;
+                    if (dist < 50000 && Math.Abs(eleDiff) < 100)
+                    {
+                        cg.stationcodes.Add(s.code);
+                    }
+                }
+            }
+        }
         private void getCityGroups()
         {
             foreach (StationGroup cg in stationsByCity)
@@ -190,6 +227,32 @@ namespace DataETL
                 foreach (Region r in regions)
                 {
                     double[] lonlat = new double[] {s.longitude, s.latitude };
+                    if (MapTools.isPointInPolygon(lonlat, r.vertices))
+                    {
+                        inside = true;
+                        var group = stationsByRegion.Find(x => x.name == r.name);
+                        group.stationcodes.Add(s.code);
+                        //break;
+                    }
+                }
+                //for the ones that fall outside
+                if (!inside)
+                {
+                    var groupOut = stationsByRegion.Find(x => x.name == "outside");
+                    groupOut.stationcodes.Add(s.code);
+                    //break;
+                }
+            }
+        }
+        private void getAllIDEAMRegionGroups()
+        {
+            foreach (Station s in stations)
+            {
+                bool inside = false;
+                
+                foreach (Region r in regions)
+                {
+                    double[] lonlat = new double[] { s.longitude, s.latitude };
                     if (MapTools.isPointInPolygon(lonlat, r.vertices))
                     {
                         inside = true;
