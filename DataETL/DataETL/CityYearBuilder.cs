@@ -20,9 +20,20 @@ namespace DataETL
         int cleanCollections;
         SyntheticYear synthYear;
         List<IMongoCollection<RecordMongo>> stationData = new List<IMongoCollection<RecordMongo>>();
+        
         public CityYearBuilder()
         {
             db = MongoTools.connect("mongodb://localhost", "climaColombia");
+        }
+        public void readSythYearFromDB()
+        {
+            var coll = db.GetCollection<SyntheticYear>("BogotaTestYear");
+            List<SyntheticYear> synthYear = coll.Find(FilterDefinition<SyntheticYear>.Empty).ToList();
+            
+        }
+        private void printEPWversion()
+        {
+
         }
         public async Task averageYear()
         {
@@ -40,6 +51,7 @@ namespace DataETL
             foreach (CollectionMongo c in synthYear.variables)
             {
                 await averageOneVariable(c.name);
+               // await averageOneVariableList(c.name);
             }
         }
         public void insertSytheticYear(string collectionName)
@@ -138,13 +150,67 @@ namespace DataETL
                 }
             }
         }
-        private void getTheStationData()
+        private async Task averageOneVariableList(string vcode)
+        {
+            var v = synthYear.variables.Find(x => x.name == vcode);
+            var builder = Builders<RecordMongo>.Filter;
+            string[] pieces;
+            int valuesAveraged = 0;
+            int hourofsyntheticyear = 0;
+            int stationNumber = 0;
+            foreach (RecordMongo r in v.records)
+            {
+                //this is the time we need to fill
+                //need to filter for month day and hour
+                int m = r.time.Month;
+                int d = r.time.Day;
+                int h = r.time.Hour;
+                hourofsyntheticyear++;
+                double value = 0;
+                int foundValues = 0;
+                foreach (IMongoCollection<RecordMongo> sd in stationData)
+                {
+                    //only if the vcode matches
+                    stationNumber++;
+                    pieces = sd.CollectionNamespace.CollectionName.Split('_');
+                    if (pieces[4] == vcode)
+                    {
+                        //convrtto list
+                        List<RecordMongo> station = await sd.Find(FilterDefinition<RecordMongo>.Empty).ToListAsync();
+                        //station.OrderBy(x => x.time);
+                        //loop all years 2000to2018
+                        int startYr = 0;
+                        int endYr = 0;
+                        getFirstLastYear(sd, ref startYr, ref endYr);
+                        for (int y = startYr; y < endYr; y++)
+                        {
+                            
+                            //some collections have duplicate timestamps!
+                            var match = station.Find(x => x.time == new DateTime(y, m, d, h, 0, 0));
+                            if(match!=null)
+                            {
+                                value += match.value;
+                                foundValues++;
+                            }
+                        }
+                    }
+                }
+                if (value != 0 && foundValues != 0)
+                {
+                    valuesAveraged++;
+                    if (value == 0) r.value = 0;
+                    else r.value = value / foundValues;
+                }
+            }
+        }
+        private async Task getTheStationData()
         {
             foreach (string c in stationCollections)
             {
                 if(c.Contains("Clean"))
                 {
                     stationData.Add(db.GetCollection<RecordMongo>(c));
+                    //stationDataLists.Add(await db.GetCollection<RecordMongo>(c).Find(FilterDefinition<RecordMongo>.Empty).ToListAsync());
                 }
             }
         }

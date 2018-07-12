@@ -48,9 +48,10 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.button14 = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.button16 = new System.Windows.Forms.Button();
-            this.button17 = new System.Windows.Forms.Button();
             this.button18 = new System.Windows.Forms.Button();
+            this.button17 = new System.Windows.Forms.Button();
+            this.button16 = new System.Windows.Forms.Button();
+            this.button19 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -246,7 +247,7 @@
             // 
             // button14
             // 
-            this.button14.Location = new System.Drawing.Point(6, 184);
+            this.button14.Location = new System.Drawing.Point(6, 90);
             this.button14.Name = "button14";
             this.button14.Size = new System.Drawing.Size(97, 63);
             this.button14.TabIndex = 17;
@@ -261,30 +262,10 @@
             this.groupBox5.Controls.Add(this.button14);
             this.groupBox5.Location = new System.Drawing.Point(141, 180);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(216, 275);
+            this.groupBox5.Size = new System.Drawing.Size(216, 162);
             this.groupBox5.TabIndex = 18;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "cleaning";
-            // 
-            // button16
-            // 
-            this.button16.Location = new System.Drawing.Point(554, 337);
-            this.button16.Name = "button16";
-            this.button16.Size = new System.Drawing.Size(97, 63);
-            this.button16.TabIndex = 19;
-            this.button16.Text = "drop indexes";
-            this.button16.UseVisualStyleBackColor = true;
-            this.button16.Click += new System.EventHandler(this.dropIndexes);
-            // 
-            // button17
-            // 
-            this.button17.Location = new System.Drawing.Point(109, 21);
-            this.button17.Name = "button17";
-            this.button17.Size = new System.Drawing.Size(97, 63);
-            this.button17.TabIndex = 18;
-            this.button17.Text = "check 10 minute readings";
-            this.button17.UseVisualStyleBackColor = true;
-            this.button17.Click += new System.EventHandler(this.checkTenMinAverages);
             // 
             // button18
             // 
@@ -296,11 +277,42 @@
             this.button18.UseVisualStyleBackColor = true;
             this.button18.Click += new System.EventHandler(this.checkIndexes);
             // 
+            // button17
+            // 
+            this.button17.Location = new System.Drawing.Point(109, 21);
+            this.button17.Name = "button17";
+            this.button17.Size = new System.Drawing.Size(97, 63);
+            this.button17.TabIndex = 18;
+            this.button17.Text = "check 10 minute readings";
+            this.button17.UseVisualStyleBackColor = true;
+            this.button17.Click += new System.EventHandler(this.checkTenMinAverages);
+            // 
+            // button16
+            // 
+            this.button16.Location = new System.Drawing.Point(657, 406);
+            this.button16.Name = "button16";
+            this.button16.Size = new System.Drawing.Size(97, 63);
+            this.button16.TabIndex = 19;
+            this.button16.Text = "drop indexes";
+            this.button16.UseVisualStyleBackColor = true;
+            this.button16.Click += new System.EventHandler(this.dropIndexes);
+            // 
+            // button19
+            // 
+            this.button19.Location = new System.Drawing.Point(651, 261);
+            this.button19.Name = "button19";
+            this.button19.Size = new System.Drawing.Size(97, 63);
+            this.button19.TabIndex = 20;
+            this.button19.Text = "read synthetic year";
+            this.button19.UseVisualStyleBackColor = true;
+            this.button19.Click += new System.EventHandler(this.readSyntheticYear);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(807, 481);
+            this.Controls.Add(this.button19);
             this.Controls.Add(this.button16);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
@@ -346,6 +358,7 @@
         private System.Windows.Forms.Button button16;
         private System.Windows.Forms.Button button17;
         private System.Windows.Forms.Button button18;
+        private System.Windows.Forms.Button button19;
     }
 }
 

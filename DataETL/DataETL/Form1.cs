@@ -34,6 +34,11 @@ namespace DataETL
             CityYearBuilder cyb = new CityYearBuilder();
             cyb.averageYear();
         }
+        private void readSyntheticYear(object sender, EventArgs e)
+        {
+            CityYearBuilder cyb = new CityYearBuilder();
+            cyb.readSythYearFromDB();
+        }
         private void button1_Click(object sender, EventArgs e)
         {
             Reader reader = new Reader();
