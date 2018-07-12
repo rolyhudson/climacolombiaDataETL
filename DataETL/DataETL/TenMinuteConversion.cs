@@ -73,7 +73,7 @@ namespace DataETL
             var sorter = Builders<RecordMongo>.Sort.Ascending("time");
             FindOptions<RecordMongo> options = new FindOptions<RecordMongo>
             {
-                BatchSize = 1000,
+                BatchSize = 500,
                 NoCursorTimeout = true,
                 Sort = sorter
             };

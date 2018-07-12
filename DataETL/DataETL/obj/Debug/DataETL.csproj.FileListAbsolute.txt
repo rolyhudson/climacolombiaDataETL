@@ -28,9 +28,9 @@ D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\sv\ZedGraph.reso
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\tr\ZedGraph.resources.dll
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\zh-cn\ZedGraph.resources.dll
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\zh-tw\ZedGraph.resources.dll
+D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.csprojResolveAssemblyReference.cache
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.Form1.resources
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.Properties.Resources.resources
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.csproj.GenerateResource.Cache
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.exe
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.pdb
-D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.csprojResolveAssemblyReference.cache

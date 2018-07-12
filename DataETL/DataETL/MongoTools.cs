@@ -90,6 +90,20 @@ namespace DataETL
                 }
             }
         }
+        public static void dropIndexes()
+        {
+            IMongoDatabase db = MongoTools.connect("mongodb://localhost", "climaColombia");
+            //clean up bog buc with PA variable
+            List<string> collNames = MongoTools.collectionNames(db);
+            foreach (string collection in collNames)
+            {
+                if (collection[0] == 's')
+                {
+                    IMongoCollection<BsonDocument> coll = db.GetCollection<BsonDocument>(collection);
+                    coll.Indexes.DropAllAsync();
+                }
+            }
+        }
         public static List<StationSummary> getCollectionAsList(string collectionname)
         {
             IMongoDatabase db = MongoTools.connect("mongodb://localhost", "climaColombia");

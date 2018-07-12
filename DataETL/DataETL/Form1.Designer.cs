@@ -47,6 +47,8 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.button14 = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.button15 = new System.Windows.Forms.Button();
+            this.button16 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -186,12 +188,13 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.button15);
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.button3);
             this.groupBox1.Controls.Add(this.button5);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(113, 243);
+            this.groupBox1.Size = new System.Drawing.Size(113, 312);
             this.groupBox1.TabIndex = 13;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Load data";
@@ -242,18 +245,39 @@
             // 
             this.groupBox5.Controls.Add(this.button12);
             this.groupBox5.Controls.Add(this.button14);
-            this.groupBox5.Location = new System.Drawing.Point(12, 261);
+            this.groupBox5.Location = new System.Drawing.Point(244, 261);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(113, 162);
             this.groupBox5.TabIndex = 18;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "cleaning";
             // 
+            // button15
+            // 
+            this.button15.Location = new System.Drawing.Point(6, 237);
+            this.button15.Name = "button15";
+            this.button15.Size = new System.Drawing.Size(97, 63);
+            this.button15.TabIndex = 5;
+            this.button15.Text = "add indexes to stations";
+            this.button15.UseVisualStyleBackColor = true;
+            this.button15.Click += new System.EventHandler(this.addIndexes);
+            // 
+            // button16
+            // 
+            this.button16.Location = new System.Drawing.Point(554, 337);
+            this.button16.Name = "button16";
+            this.button16.Size = new System.Drawing.Size(97, 63);
+            this.button16.TabIndex = 19;
+            this.button16.Text = "drop indexes";
+            this.button16.UseVisualStyleBackColor = true;
+            this.button16.Click += new System.EventHandler(this.dropIndexes);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(705, 481);
+            this.Controls.Add(this.button16);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
@@ -294,6 +318,8 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Button button14;
         private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.Button button15;
+        private System.Windows.Forms.Button button16;
     }
 }
 

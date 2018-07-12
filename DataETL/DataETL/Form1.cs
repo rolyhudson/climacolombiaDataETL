@@ -16,6 +16,11 @@ namespace DataETL
         {
             InitializeComponent();
         }
+        private void addIndexes(object sender, EventArgs e)
+        {
+            IndexStationVariableCollections isvc = new IndexStationVariableCollections();
+         
+        }
         private void syntheticYear(object sender, EventArgs e)
         {
             CityYearBuilder cyb = new CityYearBuilder();
@@ -84,6 +89,10 @@ namespace DataETL
         {
             TenMinuteConversion tmc = new TenMinuteConversion();
             tmc.convert();
+        }
+        private void dropIndexes(object sender, EventArgs e)
+        {
+            MongoTools.dropIndexes();
         }
         private void loadStations(object sender, EventArgs e)
         {
