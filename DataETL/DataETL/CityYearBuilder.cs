@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MongoDB.Driver;
+using MongoDB.Bson;
+
 namespace DataETL
 {
     class CityYearBuilder
@@ -11,14 +13,140 @@ namespace DataETL
         IMongoDatabase db;
         List<StationGroup> stationsByCity = new List<StationGroup>();
         List<Station> stations = new List<Station>();
+        string city = "SANTA FE DE BOGOTÁ";
+        StationGroup cityGroup;
+        List<string> stationCollections = new List<string>();
+        int averagedCollections;
+        int cleanCollections;
+        SyntheticYear synthYear;
+        List<IMongoCollection<RecordMongo>> stationData = new List<IMongoCollection<RecordMongo>>();
         public CityYearBuilder()
         {
             db = MongoTools.connect("mongodb://localhost", "climaColombia");
         }
-        public void averageYear()
+        public async Task averageYear()
         {
             getStationData();
-            synthesizeYears();
+            synthYear = new SyntheticYear();
+            getTheStationData();
+            //Task  f = Task.Run(() => { averageTheVariables(); });
+
+            //f.Wait();
+            await averageTheVariables();
+            insertSytheticYear("BogotaTestYear");
+        }
+        private async Task averageTheVariables()
+        {
+            foreach (CollectionMongo c in synthYear.variables)
+            {
+                await averageOneVariable(c.name);
+            }
+        }
+        public void insertSytheticYear(string collectionName)
+        {
+            var collection = db.GetCollection<SyntheticYear>(collectionName);
+            
+            var f = new Task(() => { collection.InsertOneAsync(synthYear); });
+            f.Start();
+
+        }
+        private void getFirstLastYear(IMongoCollection<RecordMongo> collection,ref int startYr,ref int endYr)
+        {
+            
+            var filter = FilterDefinition<RecordMongo>.Empty;
+            using (IAsyncCursor<RecordMongo> cursor = collection.Find(filter).Limit(1).Sort("{time: 1}").ToCursor())
+            {
+                while (cursor.MoveNext())
+                {
+                    IEnumerable<RecordMongo> documents = cursor.Current;
+                    //insert into the station collection
+                    foreach (RecordMongo rm in documents)
+                    {
+                        startYr = rm.time.Year;
+                    }
+                }
+            }
+            using (IAsyncCursor<RecordMongo> cursor = collection.Find(filter).Limit(1).Sort("{time: -1}").ToCursor())
+            {
+                while (cursor.MoveNext())
+                {
+                    IEnumerable<RecordMongo> documents = cursor.Current;
+                    //insert into the station collection
+                    foreach (RecordMongo rm in documents)
+                    {
+                        endYr = rm.time.Year;
+                    }
+                }
+            }
+            
+            
+        }
+        private async Task averageOneVariable(string vcode)
+        {
+            var v = synthYear.variables.Find(x => x.name == vcode);
+            var builder = Builders<RecordMongo>.Filter;
+            string[] pieces;
+            int valuesAveraged = 0;
+            int hourofsyntheticyear = 0;
+            int stationNumber = 0;
+            foreach (RecordMongo r in v.records)
+            {
+                //this is the time we need to fill
+                //need to filter for month day and hour
+                int m = r.time.Month;
+                int d = r.time.Day;
+                int h = r.time.Hour;
+                hourofsyntheticyear++;
+                double value = 0;
+                int foundValues = 0;
+                foreach (IMongoCollection<RecordMongo> sd in stationData)
+                {
+                    //only if the vcode matches
+                    stationNumber++;
+                    pieces = sd.CollectionNamespace.CollectionName.Split('_');
+                    if (pieces[4] == vcode)
+                    {
+                        //loop all years 2000to2018
+                        int startYr = 0;
+                        int endYr = 0;
+                        getFirstLastYear(sd, ref startYr, ref endYr);
+                        for(int y = startYr; y < endYr; y++)
+                        { 
+                            var filter = builder.Eq("time", new DateTime(y,m,d,h,0,0));
+                            //some collections have duplicate timestamps!
+                            using (IAsyncCursor<RecordMongo> cursor = await sd.FindAsync(filter))
+                            {
+                                while (await cursor.MoveNextAsync())
+                                {
+                                    IEnumerable<RecordMongo> documents = cursor.Current;
+                                    //insert into the station collection
+                                    foreach (RecordMongo sdrm in documents)
+                                    {
+                                        value += sdrm.value;
+                                        foundValues++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (value != 0&&foundValues!=0)
+                {
+                    valuesAveraged++;
+                    if (value == 0) r.value = 0;
+                    else r.value = value / foundValues;
+                }
+            }
+        }
+        private void getTheStationData()
+        {
+            foreach (string c in stationCollections)
+            {
+                if(c.Contains("Clean"))
+                {
+                    stationData.Add(db.GetCollection<RecordMongo>(c));
+                }
+            }
         }
         private void getStationData()
         {
@@ -26,27 +154,95 @@ namespace DataETL
             stations = StationGrouping.getAllStationsFromDB(db);
             var coll = db.GetCollection<StationGroup>("cityGroups");
             stationsByCity = coll.Find(FilterDefinition<StationGroup>.Empty).ToList();
+            cityGroup = stationsByCity.Find(x => x.name == city);
+            getStationsColNames();
+            //averageTenMinute();
+            //clean60Minutes();
+            //index60Minutes();
         }
-        private void synthesizeYears()
+        private void clean60Minutes()
         {
-            foreach(StationGroup cg in stationsByCity)
+            CleanRecords cr = new CleanRecords();
+            string newname = "";
+            List<string> cleanStations = new List<string>();
+            foreach (string c in stationCollections)
             {
-                if(cg.name== "SANTA FE DE BOGOTÁ")
+                string[] parts = c.Split('_');
+                int freq = Convert.ToInt32(parts[5]);
+                string source = parts[2];
+                if (freq == 60&&!source.Contains("Clean"))
                 {
-                    SyntheticYear syntheticyear = new SyntheticYear();
-                    foreach(CollectionMongo cm in syntheticyear.variables)
+
+                    //store the collection to clean
+                    cleanStations.Add(c);
+                }
+            }
+            foreach (string c in cleanStations)
+            {
+              
+                cr.cleanSingle(c);
+                cleanCollections++;
+                //store the clean collection name
+                stationCollections.Add(cr.convertNameToClean(c));
+            }
+            
+        }
+        private void index60Minutes()
+        {
+            IndexStationVariableCollections isvc = new IndexStationVariableCollections();
+            foreach (string c in stationCollections)
+            {
+                if (c.Contains("Clean")) isvc.createCollectionIndex(c);
+
+            }
+        }
+
+        private void averageTenMinute()
+        {
+            TenMinuteConversion tmc = new TenMinuteConversion();
+            
+            List<string> tenminStations = new List<string>();
+            foreach(string c in stationCollections)
+            {
+                string[] parts = c.Split('_');
+                int freq = Convert.ToInt32(parts[5]);
+                if(freq==10)
+                {
+                    //store the collection to average
+                    tenminStations.Add(c);
+                }
+            }
+            foreach(string c in tenminStations)
+            {
+               
+                tmc.convertSingleCollection(c);
+                averagedCollections++;
+                //store the avergaed collection name
+                stationCollections.Add(tmc.convertNameTo60min(c));
+            }
+           
+        }
+        private void getStationsColNames()
+        {
+            List<string> collections = MongoTools.collectionNames(db);
+            string vname = "";
+            int scode = 0;
+            string source = "";
+            int freq = 0;
+            foreach (string col in collections)
+            {
+                if (col[0] == 's')
+                {
+                    string[] parts = col.Split('_');
+                    scode = Convert.ToInt32(parts[1]);
+                    vname = parts[4];
+                    source = parts[2];
+                    freq = Convert.ToInt32(parts[5]);
+                    foreach (int code in cityGroup.stationcodes)
                     {
-                        string vname = cm.name;
-                        foreach(RecordMongo rm in cm.records)
-                        {
-                            //loop the station group at this time
-                            foreach(int scode in cg.stationcodes)
-                            {
-                                var r = getACollection(scode, vname);
-                            }
-                        }
+                        if (scode == code) stationCollections.Add(col);
+
                     }
-                   
                 }
             }
         }
@@ -83,6 +279,7 @@ namespace DataETL
     }
     class SyntheticYear
     {
+        public ObjectId Id { get; set; }
         public string name { get; set; }
         public Station info { get; set; }
         public List<CollectionMongo> variables { get; set; }

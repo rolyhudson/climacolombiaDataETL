@@ -17,7 +17,27 @@ namespace DataETL
         List<CollectionMongo> newCleanData = new List<CollectionMongo>();
         public CleanRecords()
         {
+            db = MongoTools.connect("mongodb://localhost/?maxPoolSize=1000", "climaColombia");
+        }
+        public void cleanSingle(string collection)
+        {
+            string[] parts = collection.Split('_');
+            int stationcode = Convert.ToInt32(parts[1]);
+            string vname = parts[4];
+            if (vname == "PA") return;
+            string source = parts[2];
+            int freq = Convert.ToInt32(parts[5]);
             
+            VariableMeta meta = AnnualSummary.getVariableMetaFromDB(vname, source, db);
+            string newname = convertNameToClean(collection);
+            //collection for the avergaed data
+            CollectionMongo cm = new CollectionMongo();
+            cm.name = newname;
+            newCleanData.Add(cm);
+            Task t1 = Task.Run(() => removeRecordsOutsideRange(stationcode, collection, meta, newname));
+            t1.Wait();
+            insertMany(cm.records, cm.name);
+          
         }
         public void clean()
         {
@@ -91,7 +111,7 @@ namespace DataETL
             var cm = newCleanData.Find(x => x.name == cName);
             cm.records.Add(rm);
         }
-        private string convertNameToClean(string name)
+        public string convertNameToClean(string name)
         {
             string[] parts = name.Split('_');
             string source = parts[2] + "Clean";

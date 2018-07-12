@@ -12,6 +12,9 @@ namespace DataETL
         public IndexStationVariableCollections()
         {
             db = MongoTools.connect("mongodb://localhost/?maxPoolSize=3000", "climaColombia");
+        }
+        public void indexAll()
+        {
             List<string> collNames = MongoTools.collectionNames(db);
             string vname = "";
             int stationcode = 0;
@@ -23,12 +26,11 @@ namespace DataETL
                 if (collection[0] == 's')
                 {
                     createCollectionIndex(collection);
-                    
+
                 }
             }
-
         }
-        private async Task createCollectionIndex(string collectionname)
+        public async Task createCollectionIndex(string collectionname)
         {
             IMongoCollection<RecordMongo> stationVariable = db.GetCollection<RecordMongo>(collectionname);           
             IndexKeysDefinition<RecordMongo> keysDef = "{ time: 1 }";

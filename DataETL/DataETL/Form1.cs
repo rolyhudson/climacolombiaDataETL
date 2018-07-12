@@ -16,6 +16,14 @@ namespace DataETL
         {
             InitializeComponent();
         }
+        private void checkTenMinAverages(object sender, EventArgs e)
+        {
+            MongoTools.checkAveraging();
+        }
+        private void checkIndexes(object sender, EventArgs e)
+        {
+            MongoTools.checkIndexes();
+        }
         private void addIndexes(object sender, EventArgs e)
         {
             IndexStationVariableCollections isvc = new IndexStationVariableCollections();

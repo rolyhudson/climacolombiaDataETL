@@ -20,7 +20,7 @@ namespace DataETL
         IMongoDatabase db;
         public TenMinuteConversion()
         {
-            
+            db = MongoTools.connect("mongodb://localhost/?maxPoolSize=1000", "climaColombia");
         }
         public void convert()
         {
@@ -35,6 +35,25 @@ namespace DataETL
                 insertMany(cm.records, cm.name);
             }
         }
+        public void convertSingleCollection(string collection)
+        {
+            string[] parts = collection.Split('_');
+            int stationcode = Convert.ToInt32(parts[1]);
+            string vname = parts[4];
+            if (vname == "PA") return;
+            string source = parts[2];
+            int freq = Convert.ToInt32(parts[5]);
+            if (freq == 60) return;
+            VariableMeta meta = AnnualSummary.getVariableMetaFromDB(vname, source, db);
+            string newname = convertNameTo60min(collection);
+            //collection for the avergaed data
+            CollectionMongo cm = new CollectionMongo();
+            cm.name = newname;
+            newAveragedData.Add(cm);
+            Task t1 = Task.Run(() => sortByDateAndAverage(stationcode, collection, meta, newname));
+            t1.Wait();
+            insertMany(cm.records, cm.name);
+        }
         public void convert10min()
         {
             List<string> collNames = MongoTools.collectionNames(db);
@@ -42,27 +61,30 @@ namespace DataETL
             int stationcode = 0;
             string source = "";
             int freq = 0;
+            int tenmincollections = 0;
             foreach (string collection in collNames)
             {
                 //all station record collections start with an s_
-                if (collection[0] == 's')
+                if (collection[0] == 's'&&!collection.Contains("averaged"))
                 {
-                    string[] parts = collection.Split('_');
-                    stationcode = Convert.ToInt32(parts[1]);
-                    vname = parts[4];
-                    if (vname == "PA") continue;
-                    source = parts[2];
-                    freq = Convert.ToInt32(parts[5]);
-                    VariableMeta meta = AnnualSummary.getVariableMetaFromDB(vname, source, db);
-                    if (freq ==10)
-                    {
-                        string newname = convertNameTo60min(collection);
-                        CollectionMongo cm = new CollectionMongo();
-                        
-                        cm.name = newname;
-                        newAveragedData.Add(cm);
-                        sortByDateAndAverage(stationcode,collection, meta, newname);
-                    }
+                    convertSingleCollection(collection);
+                    //string[] parts = collection.Split('_');
+                    //stationcode = Convert.ToInt32(parts[1]);
+                    //vname = parts[4];
+                    //if (vname == "PA") continue;
+                    //source = parts[2];
+                    //freq = Convert.ToInt32(parts[5]);
+                    //VariableMeta meta = AnnualSummary.getVariableMetaFromDB(vname, source, db);
+                    //if (freq ==10)
+                    //{
+                    //    tenmincollections++;
+                    //    string newname = convertNameTo60min(collection);
+                    //    CollectionMongo cm = new CollectionMongo();
+
+                    //    cm.name = newname;
+                    //    newAveragedData.Add(cm);
+                    //    sortByDateAndAverage(stationcode,collection, meta, newname);
+                    //}
                 }
             }
         }
@@ -128,10 +150,10 @@ namespace DataETL
                 }
             }
         }
-        private string convertNameTo60min(string collection)
+        public string convertNameTo60min(string collection)
         {
             string[] parts = collection.Split('_');
-            string source = parts[2]+"averaged";
+            string source = parts[2]+"averagedClean";
             string newname = parts[0] + "_"+ parts[1] + "_" + source + "_" + parts[3] + "_"+ parts[4] + "_60";
             return newname;
         }

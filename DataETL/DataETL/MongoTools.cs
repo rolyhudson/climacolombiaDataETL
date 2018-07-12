@@ -75,6 +75,60 @@ namespace DataETL
                 }
             }
         }
+        public static void checkAveraging()
+        {
+            IMongoDatabase db = MongoTools.connect("mongodb://localhost", "climaColombia");
+            //clean up bog buc with PA variable
+            List<string> collNames = MongoTools.collectionNames(db);
+            int tenmincollections = 0;
+            int averagedcollections = 0;
+            foreach (string collection in collNames)
+            {
+                if (collection[0] == 's')
+                {
+                    if (collection.Contains("average")) averagedcollections++;
+                    else
+                    {
+                        string[] parts = collection.Split('_');
+                        if (parts[5] == "10") tenmincollections++;
+                    }
+                }
+            }
+        }
+        public static bool checkIndexes()
+        {
+            IMongoDatabase db = MongoTools.connect("mongodb://localhost", "climaColombia");
+            //clean up bog buc with PA variable
+            List<string> collNames = MongoTools.collectionNames(db);
+            int withindex = 0;
+            int cleanCollection = 0;
+            foreach (string collection in collNames)
+            {
+                if (collection.Contains("Clean"))
+                {
+                    cleanCollection++;
+                    var coll = db.GetCollection<BsonDocument>(collection);
+                    IMongoIndexManager<BsonDocument> index = coll.Indexes;
+                    
+                    using (IAsyncCursor<BsonDocument> cursor = coll.Indexes.List())
+                    {
+                        while (cursor.MoveNext())
+                        {
+                            IEnumerable<BsonDocument> batch = cursor.Current;
+                            foreach(BsonDocument b in batch)
+                            {
+                                if (b["key"].AsBsonDocument.Contains("time")) withindex++; 
+                            }
+                        }
+                    }
+                }
+               
+
+            }
+            bool success = false;
+            if (withindex == cleanCollection) success = true;
+            return success;
+        }
         public static void removeCollectionsAverage()
         {
             IMongoDatabase db = MongoTools.connect("mongodb://localhost", "climaColombia");
@@ -82,7 +136,7 @@ namespace DataETL
             List<string> collNames = MongoTools.collectionNames(db);
             foreach (string collection in collNames)
             {
-                if (collection.Contains("average"))
+                if (collection.Contains("average")|| collection.Contains("Clean"))
                 {
                     var coll = db.GetCollection<BsonDocument>(collection);
                     var t = coll.Find(new BsonDocument()).ToList();
