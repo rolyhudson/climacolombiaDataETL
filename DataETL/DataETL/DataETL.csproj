@@ -101,6 +101,7 @@
     <Compile Include="CityYearBuilder.cs" />
     <Compile Include="CleanRecords.cs" />
     <Compile Include="CSVtoMongo.cs" />
+    <Compile Include="EPWWriter.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -120,6 +121,7 @@
     <Compile Include="StationGrouping.cs" />
     <Compile Include="StationLoad.cs" />
     <Compile Include="StationRecord.cs" />
+    <Compile Include="TemporalAnalysis.cs" />
     <Compile Include="TenMinuteConversion.cs" />
     <Compile Include="WeatherRecord.cs" />
     <EmbeddedResource Include="Form1.resx">

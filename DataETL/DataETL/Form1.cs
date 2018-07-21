@@ -16,6 +16,11 @@ namespace DataETL
         {
             InitializeComponent();
         }
+        private void dailyScatter(object sender, EventArgs e)
+        {
+            TemporalAnalysis ta = new TemporalAnalysis();
+            ta.graphCityGroups();
+        }
         private void checkTenMinAverages(object sender, EventArgs e)
         {
             MongoTools.checkAveraging();

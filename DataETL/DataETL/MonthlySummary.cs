@@ -230,7 +230,7 @@ namespace DataETL
             master.GetImage().Save(@"D:\WORK\piloto\Climate\monthlyBarCharts\" + sm.code.ToString() + ".jpeg", System.Drawing.Imaging.ImageFormat.Jpeg);
             
         }
-        private void getGroupFirstMonth(List<StationMonthly> group,ref int minyear, ref int minmonth)
+        public static void getGroupFirstMonth(List<StationMonthly> group,ref int minyear, ref int minmonth)
         {
             minyear = 10000;
             minmonth = 13;
@@ -246,7 +246,7 @@ namespace DataETL
                 }
             }
         }
-        private void getGroupLastMonth(List<StationMonthly> group, ref int maxyear, ref int maxmonth)
+        public static void getGroupLastMonth(List<StationMonthly> group, ref int maxyear, ref int maxmonth)
         {
             maxyear = 0;
             maxmonth = 0;

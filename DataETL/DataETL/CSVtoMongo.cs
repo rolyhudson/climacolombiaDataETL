@@ -29,7 +29,7 @@ namespace DataETL
                 {
                     string collectionName = Path.GetFileNameWithoutExtension(file);
                     
-                        db.CreateCollection(collectionName);
+                        db.CreateCollection(collectionName+"delete");
                         insertManyRecord(collectionName, file, split);
                 }
             }

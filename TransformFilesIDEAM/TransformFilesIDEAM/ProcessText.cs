@@ -106,6 +106,7 @@ namespace TransformFilesIDEAM
                         double val;
                         if (parts.Length > 2)
                         {
+                            parts[2].Replace(',', ',');
                             if (Double.TryParse(parts[3], out val))
                             { r.value = val; }
                         }
@@ -191,8 +192,11 @@ namespace TransformFilesIDEAM
                         double val;
                         if (parts.Length > 2)
                         {
+                            parts[2].Replace(',', ',');
                             if (Double.TryParse(parts[2], out val))
-                            { r.value = val; }
+                            {
+                                r.value = val;
+                            }
                         }
                         vf.records.Add(r);
                         line = sr.ReadLine();
@@ -250,6 +254,7 @@ namespace TransformFilesIDEAM
                         double val;
                         if (parts.Length > 2)
                         {
+                            parts[2].Replace(',', ',');
                             if (Double.TryParse(parts[2], out val))
                             { r.value = val; }
                         }
@@ -294,7 +299,7 @@ namespace TransformFilesIDEAM
                         Record r = new Record();
                         string[] parts = line.Split(',');
                         if(parts[1]!="")r.datetime = Convert.ToDateTime(parts[1]);
-                        if (parts[2] != "") r.value = Convert.ToDouble(parts[2]);
+                        if (parts[2] != "") r.value = Convert.ToDouble(parts[2].Replace(',','.'));
                         r.stationCode = sCode;
                         rad.records.Add(r);
                         line = sr.ReadLine();

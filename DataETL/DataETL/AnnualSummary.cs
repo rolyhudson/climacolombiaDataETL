@@ -111,7 +111,7 @@ namespace DataETL
             sw.WriteLine("code,name,source,TS,HR,PR,VV,DV,NUB");
             foreach(StationSummary ss in stations)
             {
-                Station s = getStationFromMongo(ss.code);
+                Station s = getStationFromMongo(ss.code,db);
                 sw.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8}",
                     ss.code,s.name,s.source,
                     ss.getTotalYrs("TS").ToString(),
@@ -130,7 +130,14 @@ namespace DataETL
             var builder = Builders<VariableMeta>.Filter;
             var filter = builder.Eq("code", code) & builder.Eq("source", source);
             var vms = collection.FindSync(filter).ToList();
-            return vms[0];
+            if (vms.Count > 0)
+            {
+                return vms[0];
+            }
+            else
+            {
+                return null;
+            }
         }
         public async Task<int> insideRange(string collname, int sCode, VariableMeta meta)
         {
@@ -269,7 +276,7 @@ namespace DataETL
             int count = 0;
             foreach (StationSummary ss in stations)
             {
-                Station s = getStationFromMongo(ss.code);
+                Station s = getStationFromMongo(ss.code,db);
                 sw.WriteLine(count + "," + ss.code + "," + s.name + "," + s.latitude + "," + s.longitude + "," + s.elevation);
                 sw.WriteLine(",variable_name,variable_count,variable_expected,percent_records,inside_range,percent_inside,startdate,enddate");
                 foreach (RecordMeta rm in ss.recordMeta)
@@ -283,7 +290,7 @@ namespace DataETL
 
             sw.Close();
         }
-        private Station getStationFromMongo(int code)
+        public static Station getStationFromMongo(int code, IMongoDatabase db )
         {
             IMongoCollection<Station> collection = db.GetCollection<Station>("metaStations");
             var builder = Builders<Station>.Filter;

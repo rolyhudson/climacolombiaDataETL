@@ -13,7 +13,8 @@ namespace DataETL
         IMongoDatabase db;
         List<StationGroup> stationsByCity = new List<StationGroup>();
         List<Station> stations = new List<Station>();
-        string city = "SANTA FE DE BOGOTÁ";
+        
+        string city = "CALI";
         StationGroup cityGroup;
         List<string> stationCollections = new List<string>();
         int averagedCollections;
@@ -27,13 +28,15 @@ namespace DataETL
         }
         public void readSythYearFromDB()
         {
-            var coll = db.GetCollection<SyntheticYear>("BogotaTestYear");
+            var coll = db.GetCollection<SyntheticYear>(city+"TestYear");
             List<SyntheticYear> synthYear = coll.Find(FilterDefinition<SyntheticYear>.Empty).ToList();
-            
+            synthYear[0].name = city;
+            synthYear[0].info = AnnualSummary.getStationFromMongo(21206960, db);
+            EPWWriter epww = new EPWWriter(synthYear[0], @"D:\WORK\piloto\Climate");
         }
         private void printEPWversion()
         {
-
+            
         }
         public async Task averageYear()
         {
@@ -44,7 +47,7 @@ namespace DataETL
 
             //f.Wait();
             await averageTheVariables();
-            insertSytheticYear("BogotaTestYear");
+            insertSytheticYear(city+"TestYear");
         }
         private async Task averageTheVariables()
         {
@@ -100,17 +103,21 @@ namespace DataETL
             string[] pieces;
             int valuesAveraged = 0;
             int hourofsyntheticyear = 0;
-            int stationNumber = 0;
+            
             foreach (RecordMongo r in v.records)
             {
                 //this is the time we need to fill
                 //need to filter for month day and hour
+                //remember the sytntheitc file is local time
                 int m = r.time.Month;
                 int d = r.time.Day;
                 int h = r.time.Hour;
                 hourofsyntheticyear++;
                 double value = 0;
                 int foundValues = 0;
+                DateTime local = new DateTime();
+                DateTime universal = new DateTime();
+                int stationNumber = 0;
                 foreach (IMongoCollection<RecordMongo> sd in stationData)
                 {
                     //only if the vcode matches
@@ -123,9 +130,12 @@ namespace DataETL
                         int endYr = 0;
                         getFirstLastYear(sd, ref startYr, ref endYr);
                         for(int y = startYr; y < endYr; y++)
-                        { 
-                            var filter = builder.Eq("time", new DateTime(y,m,d,h,0,0));
+                        {
+                            local = new DateTime(y, m, d, h, 0, 0);
+                            universal = local.ToUniversalTime();
+                            var filter = builder.Eq("time", universal);
                             //some collections have duplicate timestamps!
+                            //noaa raw data as UTC so it was stored as utc +5
                             using (IAsyncCursor<RecordMongo> cursor = await sd.FindAsync(filter))
                             {
                                 while (await cursor.MoveNextAsync())
