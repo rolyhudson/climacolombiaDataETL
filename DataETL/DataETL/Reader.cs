@@ -13,6 +13,8 @@ namespace DataETL
         List<StationVariables> stationVariablesCollections = new List<StationVariables>();
 
         string[] folders = {
+            @"D:\WORK\piloto\Climate\IDEAM\data\StationVariable\processed",
+            @"D:\WORK\piloto\Climate\IDEAM\data\StationVariableBogBuc\processed",
             @"D:\WORK\piloto\Climate\NOAA\data\variables"
         };
         public Reader()

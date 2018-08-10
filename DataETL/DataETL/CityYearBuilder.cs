@@ -14,7 +14,7 @@ namespace DataETL
         List<StationGroup> stationsByCity = new List<StationGroup>();
         List<Station> stations = new List<Station>();
         
-        string city = "CALI";
+        string city = "SANTA FE DE BOGOTÁ";
         StationGroup cityGroup;
         List<string> stationCollections = new List<string>();
         int averagedCollections;
@@ -53,8 +53,7 @@ namespace DataETL
         {
             foreach (CollectionMongo c in synthYear.variables)
             {
-                await averageOneVariable(c.name);
-               // await averageOneVariableList(c.name);
+                await averageOneVariableList(c.name);
             }
         }
         public void insertSytheticYear(string collectionName)
@@ -232,6 +231,10 @@ namespace DataETL
             stationsByCity = coll.Find(FilterDefinition<StationGroup>.Empty).ToList();
             cityGroup = stationsByCity.Find(x => x.name == city);
             getStationsColNames();
+            //Task t1 = Task.Run(() => indexCityCollections());
+            ////add the processed data to mongo
+            //t1.Wait();
+         
             //averageTenMinute();
             //clean60Minutes();
             //index60Minutes();
@@ -263,6 +266,16 @@ namespace DataETL
             }
             
         }
+        private void indexCityCollections()
+        {
+            IndexStationVariableCollections isvc = new IndexStationVariableCollections();
+            foreach (string c in stationCollections)
+            {
+
+                isvc.createCollectionIndex(c);
+
+            }
+        }
         private void index60Minutes()
         {
             IndexStationVariableCollections isvc = new IndexStationVariableCollections();
@@ -278,10 +291,17 @@ namespace DataETL
             TenMinuteConversion tmc = new TenMinuteConversion();
             
             List<string> tenminStations = new List<string>();
+            int freq = 0;
             foreach(string c in stationCollections)
             {
-                string[] parts = c.Split('_');
-                int freq = Convert.ToInt32(parts[5]);
+                try {
+                    string[] parts = c.Split('_');
+                    freq = Convert.ToInt32(parts[5]);
+                }
+                catch(Exception e)
+                {
+                    var wtf = 0;
+                }
                 if(freq==10)
                 {
                     //store the collection to average
@@ -310,13 +330,22 @@ namespace DataETL
                 if (col[0] == 's')
                 {
                     string[] parts = col.Split('_');
-                    scode = Convert.ToInt32(parts[1]);
-                    vname = parts[4];
-                    source = parts[2];
-                    freq = Convert.ToInt32(parts[5]);
+                    try {
+                        scode = Convert.ToInt32(parts[1]);
+                        vname = parts[4];
+                        source = parts[2];
+                        freq = Convert.ToInt32(parts[5]);
+                    }
+                    catch(Exception e)
+                    {
+                        var wft = 0;
+                    }
                     foreach (int code in cityGroup.stationcodes)
                     {
-                        if (scode == code) stationCollections.Add(col);
+                        if (scode == code)
+                        {
+                            stationCollections.Add(col);
+                        }
 
                     }
                 }

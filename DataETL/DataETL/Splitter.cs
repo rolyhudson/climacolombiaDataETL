@@ -8,6 +8,8 @@ using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using System.Windows.Forms;
+
 namespace DataETL
 {
     class Splitter
@@ -17,17 +19,22 @@ namespace DataETL
         {
             db = MongoTools.connect(connectionString, dbName);
         }
-        public void splitVariables(string dbname)
+        public async Task splitVariables(string dbname)
         {
             connect("mongodb://localhost", dbname);
 
             List<string> collNames = MongoTools.collectionNames(db);
+            await splitLoop(collNames);
+            MessageBox.Show("Finsihed");
+        }
+        private async Task splitLoop(List<string> collNames)
+        {
             foreach (string collection in collNames)
             {
                 splitter(collection);
             }
         }
-        public async Task splitter(string collectionname)
+        private async Task splitter(string collectionname)
         {
             List<int> codes = MongoTools.distinct(collectionname, db, "stationCode");
             IMongoCollection<BsonDocument> variableCollection = db.GetCollection<BsonDocument>(collectionname);

@@ -34,3 +34,14 @@ D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\zh-tw\ZedGraph.r
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.exe
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.pdb
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.csprojResolveAssemblyReference.cache
+D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\Accord.dll.config
+D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\Accord.dll
+D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\Accord.Math.Core.dll
+D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\Accord.Math.dll
+D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\Accord.Statistics.dll
+D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\MathNet.Numerics.dll
+D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\Accord.xml
+D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\Accord.Math.xml
+D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\Accord.Math.Core.xml
+D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\Accord.Statistics.xml
+D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\MathNet.Numerics.xml

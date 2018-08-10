@@ -23,7 +23,7 @@ namespace DataETL
             getNOAAstationInfo();
             findClosestOther();
             dumpText();
-            //loadToMongo();
+            loadToMongo();
         }
         private void dumpText()
         {

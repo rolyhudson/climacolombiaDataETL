@@ -21,6 +21,16 @@ namespace DataETL
             TemporalAnalysis ta = new TemporalAnalysis();
             ta.graphCityGroups();
         }
+        private void dailyScatterMonthly(object sender, EventArgs e)
+        {
+            TemporalAnalysis ta = new TemporalAnalysis();
+            ta.temporalCityGroupMonthly();
+        }
+        private void dailyScatterTSRS(object sender, EventArgs e)
+        {
+            TemporalAnalysis ta = new TemporalAnalysis();
+            ta.graphAllTS_RS();
+        }
         private void checkTenMinAverages(object sender, EventArgs e)
         {
             MongoTools.checkAveraging();
@@ -52,6 +62,7 @@ namespace DataETL
         {
             Splitter s = new Splitter();
             s.splitVariables("climaColombia");
+            
         }
         private void summary(object sender, EventArgs e)
         {
@@ -99,9 +110,18 @@ namespace DataETL
             StationGrouping sg = new StationGrouping(false);
             
         }
+        private void addVariables(object sender,EventArgs e)
+        {
+            AnnualSummary s = new AnnualSummary();
+            s.getRequiredVaribleMeta();
+        }
         private void removePACollections(object sender, EventArgs e)
         {
-            MongoTools.removeCollectionsAverage();
+            MongoTools.cleanUp();
+        }
+        private void checkRadLoad(object sender, EventArgs e)
+        {
+            MongoTools.checkRadiationLoaded();
         }
         private void convertTenMinuteCollections(object sender, EventArgs e)
         {

@@ -60,18 +60,18 @@ namespace DataETL
                 }
             }
         }
-        public static void removeCollectionsAnnual()
+        public static void cleanUp()
         {
             IMongoDatabase db = MongoTools.connect("mongodb://localhost", "climaColombia");
             //clean up bog buc with PA variable
             List<string> collNames = MongoTools.collectionNames(db);
             foreach (string collection in collNames)
             {
-                if (collection.Contains("annual"))
+                if (collection.Contains("PA"))
                 {
-                        var coll = db.GetCollection<BsonDocument>(collection);
-                        var t = coll.Find(new BsonDocument()).ToList();
-                        //db.DropCollection(collection);
+                    var coll = db.GetCollection<BsonDocument>(collection);
+                    var t = coll.Find(new BsonDocument()).ToList();
+                    db.DropCollection(collection);
                 }
             }
         }
@@ -141,6 +141,19 @@ namespace DataETL
                     var coll = db.GetCollection<BsonDocument>(collection);
                     var t = coll.Find(new BsonDocument()).ToList();
                     db.DropCollection(collection);
+                }
+            }
+        }
+        public static void checkRadiationLoaded()
+        {
+            IMongoDatabase db = MongoTools.connect("mongodb://localhost", "climaColombia");
+            //clean up bog buc with PA variable
+            List<string> collNames = MongoTools.collectionNames(db);
+            foreach (string collection in collNames)
+            {
+                if (collection.Contains("rad"))
+                {
+                    var rad = 0;
                 }
             }
         }

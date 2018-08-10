@@ -17,6 +17,7 @@ namespace DataETL
     {
         List<Station> stations = new List<Station>();
         List<StationSummary> stationsummarys = new List<StationSummary>();
+        List<int> activeStationCodes = new List<int>();
         List<Region> regions = new List<Region>();
         List<City> cities = new List<City>();
         List<StationGroup> stationsByRegion = new List<StationGroup>();
@@ -29,8 +30,8 @@ namespace DataETL
             if (allideam) makeGroupsALLIDEAM();
             else makeGroups();
             outputJSON();
-            //storeInMongo();
-            //writeStationCoords();
+            storeInMongo();
+            writeStationCoords();
 
         }
         private void storeInMongo()
@@ -46,9 +47,27 @@ namespace DataETL
             //get the city's region
             getCityRegionName();
             //gets all the stations for which we have data
-            getStationsFromDB(db);
+            getActiveStations();
+            
+            //getStationsFromDB(db);
             //gets the full list of meta data for all stations NOAA and IDEAM
             stations = getAllStationsFromDB(db);
+        }
+        private void getActiveStations()
+        {
+            List<string> collections = MongoTools.collectionNames(db);
+            foreach(string collection in collections)
+            {
+                if(collection[0]=='s')
+                {
+                    string[] parts = collection.Split('_');
+                    int code = Convert.ToInt32(parts[1]);
+                    if(!activeStationCodes.Contains(code))
+                    {
+                        activeStationCodes.Add(code);
+                    }
+                }
+            }
         }
         public void makeGroups()
         {
@@ -199,10 +218,10 @@ namespace DataETL
 
                 double eleDiff = 0;
 
-                foreach (StationSummary ss in stationsummarys)
+                foreach (int code in activeStationCodes)
                 {
                     //get the ref station details
-                    Station s = stations.Find(x => x.code == ss.code);
+                    Station s = stations.Find(x => x.code == code);
                     if (s == null) s = new Station();
                     //find within radius altitude
 
@@ -218,11 +237,11 @@ namespace DataETL
         }
         private void getRegionGroups()
         {
-            foreach (StationSummary ss in stationsummarys)
+            foreach (int code in activeStationCodes)
             {
                 bool inside = false;
                 //get the ref station details
-                Station s = stations.Find(x => x.code == ss.code);
+                Station s = stations.Find(x => x.code == code);
                 if (s == null) s = new Station();
                 foreach (Region r in regions)
                 {

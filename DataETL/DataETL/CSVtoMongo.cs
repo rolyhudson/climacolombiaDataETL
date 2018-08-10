@@ -29,7 +29,7 @@ namespace DataETL
                 {
                     string collectionName = Path.GetFileNameWithoutExtension(file);
                     
-                        db.CreateCollection(collectionName+"delete");
+                        db.CreateCollection(collectionName);
                         insertManyRecord(collectionName, file, split);
                 }
             }
@@ -47,13 +47,32 @@ namespace DataETL
             {
 
                 prts = line.Split(split);
+                
                 var dataToInsert = new RecordMongo
                 {
                     stationCode = Convert.ToInt32(prts[0]),
-
                     time = Convert.ToDateTime(prts[1]),
                     value = Convert.ToDouble(prts[2])
                 };
+                if (collectionName.Contains("NOAA"))
+                {
+                    //noaa uses UTC so this subtracts 5 hours to bogota
+                    dataToInsert.time = dataToInsert.time.ToLocalTime();
+                }
+                else
+                {
+                    if (collectionName.Contains("variable"))
+                    {
+                        //ideams date stamp is local -5!!!!
+                        dataToInsert.time = dataToInsert.time.AddHours(5);
+                        //set as local
+                        dataToInsert.time = DateTime.SpecifyKind(dataToInsert.time, DateTimeKind.Local);
+                    }
+                    else
+                    {
+                        dataToInsert.time = DateTime.SpecifyKind(dataToInsert.time, DateTimeKind.Local);
+                    }
+                }
                 listOfDocuments.Add(dataToInsert);
 
                 if (++current == limitAtOnce)

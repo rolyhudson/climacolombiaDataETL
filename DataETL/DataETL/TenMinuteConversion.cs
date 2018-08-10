@@ -40,7 +40,7 @@ namespace DataETL
             string[] parts = collection.Split('_');
             int stationcode = Convert.ToInt32(parts[1]);
             string vname = parts[4];
-            if (vname == "PA") return;
+            
             string source = parts[2];
             int freq = Convert.ToInt32(parts[5]);
             if (freq == 60) return;
@@ -68,23 +68,7 @@ namespace DataETL
                 if (collection[0] == 's'&&!collection.Contains("averaged"))
                 {
                     convertSingleCollection(collection);
-                    //string[] parts = collection.Split('_');
-                    //stationcode = Convert.ToInt32(parts[1]);
-                    //vname = parts[4];
-                    //if (vname == "PA") continue;
-                    //source = parts[2];
-                    //freq = Convert.ToInt32(parts[5]);
-                    //VariableMeta meta = AnnualSummary.getVariableMetaFromDB(vname, source, db);
-                    //if (freq ==10)
-                    //{
-                    //    tenmincollections++;
-                    //    string newname = convertNameTo60min(collection);
-                    //    CollectionMongo cm = new CollectionMongo();
-
-                    //    cm.name = newname;
-                    //    newAveragedData.Add(cm);
-                    //    sortByDateAndAverage(stationcode,collection, meta, newname);
-                    //}
+                    
                 }
             }
         }
