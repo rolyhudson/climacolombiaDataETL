@@ -28,16 +28,13 @@ namespace DataETL
         }
         public void readSythYearFromDB()
         {
-            var coll = db.GetCollection<SyntheticYear>(city+"TestYear");
+            var coll = db.GetCollection<SyntheticYear>(city+ "TestYearMedian");
             List<SyntheticYear> synthYear = coll.Find(FilterDefinition<SyntheticYear>.Empty).ToList();
             synthYear[0].name = city;
             synthYear[0].info = AnnualSummary.getStationFromMongo(21206960, db);
-            EPWWriter epww = new EPWWriter(synthYear[0], @"D:\WORK\piloto\Climate");
+            EPWWriter epww = new EPWWriter(synthYear[0], @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate");
         }
-        private void printEPWversion()
-        {
-            
-        }
+
         public async Task averageYear()
         {
             getStationData();
@@ -47,7 +44,7 @@ namespace DataETL
 
             //f.Wait();
             await averageTheVariables();
-            insertSytheticYear(city+"TestYear");
+            insertSytheticYear(city+"TestYearMedian");
         }
         private async Task averageTheVariables()
         {
@@ -164,9 +161,11 @@ namespace DataETL
             var v = synthYear.variables.Find(x => x.name == vcode);
             var builder = Builders<RecordMongo>.Filter;
             string[] pieces;
-            int valuesAveraged = 0;
+            
             int hourofsyntheticyear = 0;
-            int stationNumber = 0;
+            
+            DateTime local = new DateTime();
+            DateTime universal = new DateTime();
             foreach (RecordMongo r in v.records)
             {
                 //this is the time we need to fill
@@ -177,38 +176,52 @@ namespace DataETL
                 hourofsyntheticyear++;
                 double value = 0;
                 int foundValues = 0;
+                List<double> valuesForHour = new List<double>();
                 foreach (IMongoCollection<RecordMongo> sd in stationData)
                 {
                     //only if the vcode matches
-                    stationNumber++;
                     pieces = sd.CollectionNamespace.CollectionName.Split('_');
                     if (pieces[4] == vcode)
                     {
-                        //convrtto list
-                        List<RecordMongo> station = await sd.Find(FilterDefinition<RecordMongo>.Empty).ToListAsync();
-                        //station.OrderBy(x => x.time);
                         //loop all years 2000to2018
                         int startYr = 0;
                         int endYr = 0;
                         getFirstLastYear(sd, ref startYr, ref endYr);
                         for (int y = startYr; y < endYr; y++)
                         {
-                            
+
+                            local = new DateTime(y, m, d, h, 0, 0);
+                            universal = local.ToUniversalTime();
+                            var filter = builder.Eq("time", universal);
                             //some collections have duplicate timestamps!
-                            var match = station.Find(x => x.time == new DateTime(y, m, d, h, 0, 0));
-                            if(match!=null)
+                            
+                            using (IAsyncCursor<RecordMongo> cursor = await sd.FindAsync(filter))
                             {
-                                value += match.value;
-                                foundValues++;
+                                while (await cursor.MoveNextAsync())
+                                {
+                                    IEnumerable<RecordMongo> documents = cursor.Current;
+                                    //insert into the station collection
+                                    foreach (RecordMongo sdrm in documents)
+                                    {
+                                        value = sdrm.value;
+                                        if (vcode == "HR" && sdrm.value <= 1) value = value * 100;
+                                        if (vcode == "NUB")
+                                        {
+                                            if (value == 9) value = 10;
+                                            value = (int)(value / 8.0 * 10);
+                                        }
+                                        valuesForHour.Add(value);
+                                        foundValues++;
+                                    }
+                                }
                             }
                         }
                     }
                 }
-                if (value != 0 && foundValues != 0)
+                if (foundValues != 0)
                 {
-                    valuesAveraged++;
-                    if (value == 0) r.value = 0;
-                    else r.value = value / foundValues;
+                    //r.value = Accord.Statistics.Measures.Mean(valuesForHour.ToArray());
+                    r.value = Accord.Statistics.Measures.Median(valuesForHour.ToArray());
                 }
             }
         }

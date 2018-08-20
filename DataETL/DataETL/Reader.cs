@@ -13,9 +13,9 @@ namespace DataETL
         List<StationVariables> stationVariablesCollections = new List<StationVariables>();
 
         string[] folders = {
-            @"D:\WORK\piloto\Climate\IDEAM\data\StationVariable\processed",
-            @"D:\WORK\piloto\Climate\IDEAM\data\StationVariableBogBuc\processed",
-            @"D:\WORK\piloto\Climate\NOAA\data\variables"
+            @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\data\StationVariable\processed",
+            @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\data\StationVariableBogBuc\processed",
+            @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\NOAA\data\variables"
         };
         public Reader()
         {

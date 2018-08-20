@@ -201,34 +201,34 @@ namespace DataETL
                                  //\note values or the last "good" value is substituted.
 
                 line.Append(getValue("TS", currentHr).ToString() + ","); //N6, \field Dry Bulb Temperature\units C\minimum > -70\maximum < 70\missing 99.9
-                line.Append("0,"); //N7, \field Dew Point Temperature\units C\minimum > -70\maximum < 70\missing 99.9
+                line.Append("99.9,"); //N7, \field Dew Point Temperature\units C\minimum > -70\maximum < 70\missing 99.9
                 line.Append(getValue("HR", currentHr).ToString() + ","); // N8, \field Relative Humidity\missing 999.\minimum 0\maximum 110
                 line.Append(pressure.ToString() + ",");// N9, \field Atmospheric Station Pressure\units Pa\missing 999999.\minimum > 31000\maximum < 120000
-                line.Append("0,");//N10, \field Extraterrestrial Horizontal Radiation\units Wh / m2\missing 9999.\minimum 0
-                line.Append("0,");//N11, \field Extraterrestrial Direct Normal Radiation\units Wh / m2\missing 9999.\minimum 0
-                line.Append("0,");//N12, \field Horizontal Infrared Radiation Intensity\units Wh / m2\missing 9999.\minimum 0
-                line.Append("0,");//N13, \field Global Horizontal Radiation \units Wh / m2\missing 9999.\minimum 0
+                line.Append("9999.,");//N10, \field Extraterrestrial Horizontal Radiation\units Wh / m2\missing 9999.\minimum 0
+                line.Append("9999.,");//N11, \field Extraterrestrial Direct Normal Radiation\units Wh / m2\missing 9999.\minimum 0
+                line.Append("9999.,");//N12, \field Horizontal Infrared Radiation Intensity\units Wh / m2\missing 9999.\minimum 0
+                line.Append("9999.,");//N13, \field Global Horizontal Radiation \units Wh / m2\missing 9999.\minimum 0
                 line.Append(getValue("RS", currentHr).ToString() + ",");//N14, \field Direct Normal Radiation \units Wh / m2\missing 9999.\minimum 0
                 line.Append(getValue("RS", currentHr).ToString() + ",");//N15, \field Diffuse Horizontal Radiation\units Wh / m2\missing 9999.\minimum 0
-                line.Append("0,");//N16, \field Global Horizontal Illuminance\units lux\missing 999999.\note will be missing if > = 999900\minimum 0
-                line.Append("0,");//N17, \field Direct Normal Illuminance\units lux\missing 999999.\note will be missing if > = 999900\minimum 0
-                line.Append("0,");//N18, \field Diffuse Horizontal Illuminance\units lux\missing 999999.\note will be missing if > = 999900\minimum 0
-                line.Append("0,");//N19, \field Zenith Luminance\units Cd / m2\missing 9999.\note will be missing if > = 9999\minimum 0
+                line.Append("999999.,");//N16, \field Global Horizontal Illuminance\units lux\missing 999999.\note will be missing if > = 999900\minimum 0
+                line.Append("999999.,");//N17, \field Direct Normal Illuminance\units lux\missing 999999.\note will be missing if > = 999900\minimum 0
+                line.Append("999999.,");//N18, \field Diffuse Horizontal Illuminance\units lux\missing 999999.\note will be missing if > = 999900\minimum 0
+                line.Append("9999.,");//N19, \field Zenith Luminance\units Cd / m2\missing 9999.\note will be missing if > = 9999\minimum 0
                 line.Append(getValue("DV", currentHr).ToString() + ",");//N20, \field Wind Direction\units degrees\missing 999.\minimum 0\maximum 360
                 line.Append(getValue("VV", currentHr).ToString() + ",");//N21, \field Wind Speed\units m / s\missing 999.\minimum 0\maximum 40
-                line.Append("0,");//N22, \field Total Sky Cover\missing 99\minimum 0\maximum 10
-                line.Append("0,");//N23, \field Opaque Sky Cover (used if Horizontal IR Intensity missing)\missing 99\minimum 0\maximum 10
-                line.Append("0,");//N24, \field Visibility\units km\missing 9999
-                line.Append("0,");//N25, \field Ceiling Height\units m\missing 99999
-                line.Append("0,");//N26, \field Present Weather Observation
-                line.Append("0,");// N27, \field Present Weather Codes
-                line.Append("0,");//N28, \field Precipitable Water\units mm\missing 999
-                line.Append("0,");//N29, \field Aerosol Optical Depth\units thousandths\missing .999
-                line.Append("0,");//N30, \field Snow Depth\units cm\missing 999
-                line.Append("0,");//N31, \field Days Since Last Snowfall\missing 99
-                line.Append("0,");//N32, \field Albedo\missing 999
+                line.Append(getValue("NUB", currentHr).ToString()+",");//N22, \field Total Sky Cover\missing 99\minimum 0\maximum 10
+                line.Append("99,");//N23, \field Opaque Sky Cover (used if Horizontal IR Intensity missing)\missing 99\minimum 0\maximum 10
+                line.Append("9999,");//N24, \field Visibility\units km\missing 9999
+                line.Append("99999,");//N25, \field Ceiling Height\units m\missing 99999
+                line.Append(",");//N26, \field Present Weather Observation
+                line.Append(",");// N27, \field Present Weather Codes
+                line.Append("999,");//N28, \field Precipitable Water\units mm\missing 999
+                line.Append(".999,");//N29, \field Aerosol Optical Depth\units thousandths\missing .999
+                line.Append("999,");//N30, \field Snow Depth\units cm\missing 999
+                line.Append("99,");//N31, \field Days Since Last Snowfall\missing 99
+                line.Append("999,");//N32, \field Albedo\missing 999
                 line.Append(getValue("PR", currentHr).ToString() + ",");//N33, \field Liquid Precipitation Depth\units mm\missing 999
-                line.Append("0,");//N34; \field Liquid Precipitation Quantityunits hr\missing 99
+                line.Append("99,");//N34; \field Liquid Precipitation Quantityunits hr\missing 99
                 this.epw.WriteLine(line);
                 line.Clear();
                
