@@ -176,29 +176,18 @@ namespace DataETL
             var builder = Builders<RecordMongo>.Filter;
             string[] pieces;
 
-            int hourofsyntheticyear = 0;
-
-            DateTime local = new DateTime();
-            DateTime universal = new DateTime();
-            foreach (RecordMongo r in v.records)
-            {
-                //this is the time we need to fill
-                //need to filter for month day and hour
-                int m = r.time.Month;
-                int d = r.time.Day;
-                int h = r.time.Hour;
-                hourofsyntheticyear++;
-                double value = 0;
-                int foundValues = 0;
-                List<double> valuesForHour = new List<double>();
-                foreach (IMongoCollection<RecordMongo> sd in stationData)
+                List<List<RecordMongo>> possDayValues;
+                for (int doy = 1; doy < 366; doy++)
                 {
-                    //only if the vcode matches
-                    pieces = sd.CollectionNamespace.CollectionName.Split('_');
-                    if (pieces[4] == vcode)
+                    //each day will have several canadidate days sourced from each collection of same variable
+                    possDayValues = new List<List<RecordMongo>>();
+                    foreach (IMongoCollection<RecordMongo> sd in stationData)
                     {
-                        for (int doy = 1; doy < 366; doy++)
+                        //only if the vcode matches
+                        pieces = sd.CollectionNamespace.CollectionName.Split('_');
+                        if (pieces[4] == vcode)
                         {
+
                             var project =
                                 BsonDocument.Parse(
                                     "{value: '$value',time:'$time',dayOfYear: {$dayOfYear: '$time'},year: {$year: '$time'}}");
@@ -215,17 +204,21 @@ namespace DataETL
                                     doc => doc.GetValue("year").ToInt32(),
                                     doc => doc);
 
+                                
                                 foreach (IGrouping<int, BsonDocument> yearDayGroup in query)
                                 {
                                     var year = yearDayGroup.Key;
                                     var hours = yearDayGroup.Count();
                                     //one group per day per year count should be 24
-                                    List<BsonDocument> dayValues = new List<BsonDocument>();
+                                    List<RecordMongo> dayValues = new List<RecordMongo>();
                                     foreach (BsonDocument name in yearDayGroup)
                                     {
-                                        dayValues.Add(name);
+                                        RecordMongo rm = new RecordMongo();
+                                        rm.value = name.GetValue("value").ToDouble();
+                                        rm.time = name.GetValue("time").ToLocalTime();
+                                        dayValues.Add(rm);
                                     }
-                                    //    
+                                    possDayValues.Add(dayValues);
                                 }
 
                             }
@@ -233,22 +226,25 @@ namespace DataETL
                             {
                                 var error = "errorhere";
                             }
+
+                        }
+                    }
+                    if (possDayValues.Count>0)
+                    {
+                        //randomly choose 1
+                        {
+                            int total = possDayValues.Count;
+                            Random rand = new Random();
+                            var candidateDay = possDayValues[rand.Next(0, total)];
+                            //assign to synthetic year
+                            foreach(RecordMongo cm in candidateDay)
+                            {
+                            var day = v.records.FindAll(x => x.time.DayOfYear == doy);
+                            }
                         }
                     }
                 }
-                if (foundValues != 0)
-                {
-                    //r.value = Accord.Statistics.Measures.Mean(valuesForHour.ToArray());
-                    r.value = Accord.Statistics.Measures.Median(valuesForHour.ToArray());
-                    //randomly choose 1
-                    //{
-                    //    int total = valuesForHour.Count;
-                    //    Random rand = new Random();
-                    //    r.value = valuesForHour[rand.Next(0, total)];
-                    //}
-
-                }
-            }
+            
         }
         //private async Task<PointPairList> GenerateMonthlyData(string collname, int month, VariableMeta vm)
         //{
