@@ -28,11 +28,11 @@ namespace DataETL
         }
         public void readSythYearFromDB()
         {
-            var coll = db.GetCollection<SyntheticYear>(city+ "TestYearMedian");
+            var coll = db.GetCollection<SyntheticYear>(city+ "TestYearDaySelector");
             List<SyntheticYear> synthYear = coll.Find(FilterDefinition<SyntheticYear>.Empty).ToList();
             synthYear[0].name = city;
             synthYear[0].info = AnnualSummary.getStationFromMongo(21206960, db);
-            EPWWriter epww = new EPWWriter(synthYear[0], @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate");
+            EPWWriter epww = new EPWWriter(synthYear[0], @"D:\WORK\piloto\Climate\epw");
         }
 
         public async Task averageYear()
@@ -44,7 +44,7 @@ namespace DataETL
 
             //f.Wait();
             await averageTheVariables();
-            insertSytheticYear(city+"TestYearMedian");
+            insertSytheticYear(city+"TestYearDaySelector");
         }
         private async Task averageTheVariables()
         {
@@ -179,6 +179,7 @@ namespace DataETL
                 List<List<RecordMongo>> possDayValues;
                 for (int doy = 1; doy < 366; doy++)
                 {
+                if (doy == 60) continue;
                     //each day will have several canadidate days sourced from each collection of same variable
                     possDayValues = new List<List<RecordMongo>>();
                     foreach (IMongoCollection<RecordMongo> sd in stationData)
@@ -210,15 +211,18 @@ namespace DataETL
                                     var year = yearDayGroup.Key;
                                     var hours = yearDayGroup.Count();
                                     //one group per day per year count should be 24
-                                    List<RecordMongo> dayValues = new List<RecordMongo>();
-                                    foreach (BsonDocument name in yearDayGroup)
+                                    if (hours == 24)
                                     {
-                                        RecordMongo rm = new RecordMongo();
-                                        rm.value = name.GetValue("value").ToDouble();
-                                        rm.time = name.GetValue("time").ToLocalTime();
-                                        dayValues.Add(rm);
+                                        List<RecordMongo> dayValues = new List<RecordMongo>();
+                                        foreach (BsonDocument name in yearDayGroup)
+                                        {
+                                            RecordMongo rm = new RecordMongo();
+                                            rm.value = name.GetValue("value").ToDouble();
+                                            rm.time = name.GetValue("time").ToLocalTime();
+                                            dayValues.Add(rm);
+                                        }
+                                        possDayValues.Add(dayValues);
                                     }
-                                    possDayValues.Add(dayValues);
                                 }
 
                             }
@@ -231,16 +235,43 @@ namespace DataETL
                     }
                     if (possDayValues.Count>0)
                     {
-                        //randomly choose 1
-                        {
-                            int total = possDayValues.Count;
-                            Random rand = new Random();
-                            var candidateDay = possDayValues[rand.Next(0, total)];
-                            //assign to synthetic year
-                            foreach(RecordMongo cm in candidateDay)
+                    //randomly choose 1
+                    int total = 0;
+                    Random rand = new Random();
+                    List<RecordMongo> candidateDay;
+                    List<RecordMongo> synthDay;
+                    List<int> hourcheck = new List<int>();
+                    RecordMongo synthRecordForUpdate;
+                    double value = 0;
+                        try
                             {
-                            var day = v.records.FindAll(x => x.time.DayOfYear == doy);
+                                total = possDayValues.Count;
+                            
+                                candidateDay = possDayValues[rand.Next(0, total)];
+                                //assign to synthetic year
+                                synthDay = v.records.FindAll(x => x.time.DayOfYear == doy);
+                            //doy 60 does not exisit
+                            if (synthDay.Count>0)
+                            {
+                                foreach (RecordMongo cm in candidateDay)
+                                {
+                                    value = cm.value;
+                                    if (vcode == "HR" && value <= 1) value = value * 100;
+                                    if (vcode == "NUB")
+                                    {
+                                        if (value == 9) value = 10;
+                                        value = (int)(value / 8.0 * 10);
+                                    }
+                                    hourcheck.Add(cm.time.Hour);
+                                    synthRecordForUpdate = synthDay.Find(x => x.time.Hour == cm.time.Hour);
+
+                                    synthRecordForUpdate.value = value;
+                                }
                             }
+                            }
+                             catch(Exception e)
+                            {
+                            var error = "errorhere";
                         }
                     }
                 }

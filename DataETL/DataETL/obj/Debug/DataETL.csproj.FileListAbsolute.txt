@@ -33,7 +33,6 @@ D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\zh-cn\ZedGraph.r
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\zh-tw\ZedGraph.resources.dll
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.exe
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.pdb
-D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.csprojResolveAssemblyReference.cache
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\Accord.dll.config
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\Accord.dll
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\Accord.Math.Core.dll
@@ -94,3 +93,6 @@ C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\DataETL\Dat
 C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.csproj.CopyComplete
 C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.exe
 C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.pdb
+D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.csprojAssemblyReference.cache
+D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.csproj.CoreCompileInputs.cache
+D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.csproj.CopyComplete
