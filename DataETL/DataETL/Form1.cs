@@ -100,6 +100,11 @@ namespace DataETL
             MonthlySummary ds = new MonthlySummary();
             ds.groupMonthly();
         }
+        private void printcitymeta(object sender, EventArgs e)
+        {
+            MonthlySummary ds = new MonthlySummary();
+            ds.printCityMeta();
+        }
         private void outputAnnualSummary(object sender, EventArgs e)
         {
             AnnualSummary ds = new AnnualSummary();

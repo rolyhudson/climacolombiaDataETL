@@ -50,7 +50,8 @@ namespace DataETL
         {
             foreach (CollectionMongo c in synthYear.variables)
             {
-                await averageOneVariableList(c.name);
+                //await averageOneVariableList(c.name);
+                await selectDayOfYear(c.name);
             }
         }
         public void insertSytheticYear(string collectionName)
@@ -92,70 +93,7 @@ namespace DataETL
             
             
         }
-        private async Task averageOneVariable(string vcode)
-        {
-            var v = synthYear.variables.Find(x => x.name == vcode);
-            var builder = Builders<RecordMongo>.Filter;
-            string[] pieces;
-            int valuesAveraged = 0;
-            int hourofsyntheticyear = 0;
-            
-            foreach (RecordMongo r in v.records)
-            {
-                //this is the time we need to fill
-                //need to filter for month day and hour
-                //remember the sytntheitc file is local time
-                int m = r.time.Month;
-                int d = r.time.Day;
-                int h = r.time.Hour;
-                hourofsyntheticyear++;
-                double value = 0;
-                int foundValues = 0;
-                DateTime local = new DateTime();
-                DateTime universal = new DateTime();
-                int stationNumber = 0;
-                foreach (IMongoCollection<RecordMongo> sd in stationData)
-                {
-                    //only if the vcode matches
-                    stationNumber++;
-                    pieces = sd.CollectionNamespace.CollectionName.Split('_');
-                    if (pieces[4] == vcode)
-                    {
-                        //loop all years 2000to2018
-                        int startYr = 0;
-                        int endYr = 0;
-                        getFirstLastYear(sd, ref startYr, ref endYr);
-                        for(int y = startYr; y < endYr; y++)
-                        {
-                            local = new DateTime(y, m, d, h, 0, 0);
-                            universal = local.ToUniversalTime();
-                            var filter = builder.Eq("time", universal);
-                            //some collections have duplicate timestamps!
-                            //noaa raw data as UTC so it was stored as utc +5
-                            using (IAsyncCursor<RecordMongo> cursor = await sd.FindAsync(filter))
-                            {
-                                while (await cursor.MoveNextAsync())
-                                {
-                                    IEnumerable<RecordMongo> documents = cursor.Current;
-                                    //insert into the station collection
-                                    foreach (RecordMongo sdrm in documents)
-                                    {
-                                        value += sdrm.value;
-                                        foundValues++;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                if (value != 0&&foundValues!=0)
-                {
-                    valuesAveraged++;
-                    if (value == 0) r.value = 0;
-                    else r.value = value / foundValues;
-                }
-            }
-        }
+        
         private async Task averageOneVariableList(string vcode)
         {
             var v = synthYear.variables.Find(x => x.name == vcode);
@@ -222,9 +160,131 @@ namespace DataETL
                 {
                     //r.value = Accord.Statistics.Measures.Mean(valuesForHour.ToArray());
                     r.value = Accord.Statistics.Measures.Median(valuesForHour.ToArray());
+                    //randomly choose 1
+                    //{
+                    //    int total = valuesForHour.Count;
+                    //    Random rand = new Random();
+                    //    r.value = valuesForHour[rand.Next(0, total)];
+                    //}
+                   
                 }
             }
         }
+        private async Task selectDayOfYear(string vcode)
+        {
+            var v = synthYear.variables.Find(x => x.name == vcode);
+            var builder = Builders<RecordMongo>.Filter;
+            string[] pieces;
+
+            int hourofsyntheticyear = 0;
+
+            DateTime local = new DateTime();
+            DateTime universal = new DateTime();
+            foreach (RecordMongo r in v.records)
+            {
+                //this is the time we need to fill
+                //need to filter for month day and hour
+                int m = r.time.Month;
+                int d = r.time.Day;
+                int h = r.time.Hour;
+                hourofsyntheticyear++;
+                double value = 0;
+                int foundValues = 0;
+                List<double> valuesForHour = new List<double>();
+                foreach (IMongoCollection<RecordMongo> sd in stationData)
+                {
+                    //only if the vcode matches
+                    pieces = sd.CollectionNamespace.CollectionName.Split('_');
+                    if (pieces[4] == vcode)
+                    {
+                        for (int doy = 1; doy < 366; doy++)
+                        {
+                            var project =
+                                BsonDocument.Parse(
+                                    "{value: '$value',time:'$time',dayOfYear: {$dayOfYear: '$time'},year: {$year: '$time'}}");
+                            try
+                            {
+                                var aggregationDocument =
+                                    sd.Aggregate()
+                                        .Unwind("value")
+                                        .Project(project)
+                                        .Match(BsonDocument.Parse("{'dayOfYear' : {$eq : " + doy.ToString() + "}}"))
+                                        .ToList();
+
+                                IEnumerable<IGrouping<int, BsonDocument>> query = aggregationDocument.GroupBy(
+                                    doc => doc.GetValue("year").ToInt32(),
+                                    doc => doc);
+
+                                foreach (IGrouping<int, BsonDocument> yearDayGroup in query)
+                                {
+                                    var year = yearDayGroup.Key;
+                                    var hours = yearDayGroup.Count();
+                                    //one group per day per year count should be 24
+                                    List<BsonDocument> dayValues = new List<BsonDocument>();
+                                    foreach (BsonDocument name in yearDayGroup)
+                                    {
+                                        dayValues.Add(name);
+                                    }
+                                    //    
+                                }
+
+                            }
+                            catch (Exception e)
+                            {
+                                var error = "errorhere";
+                            }
+                        }
+                    }
+                }
+                if (foundValues != 0)
+                {
+                    //r.value = Accord.Statistics.Measures.Mean(valuesForHour.ToArray());
+                    r.value = Accord.Statistics.Measures.Median(valuesForHour.ToArray());
+                    //randomly choose 1
+                    //{
+                    //    int total = valuesForHour.Count;
+                    //    Random rand = new Random();
+                    //    r.value = valuesForHour[rand.Next(0, total)];
+                    //}
+
+                }
+            }
+        }
+        //private async Task<PointPairList> GenerateMonthlyData(string collname, int month, VariableMeta vm)
+        //{
+        //    //testAggreate(collname);
+        //    PointPairList list = new PointPairList();
+
+
+        //    IMongoCollection<RecordMongo> collection = db.GetCollection<RecordMongo>(collname);
+        //    var project =
+        //        BsonDocument.Parse(
+        //            "{value: '$value',time:'$time',month: {$month: '$time'}}");
+        //    try
+        //    {
+        //        var aggregationDocument =
+        //            collection.Aggregate()
+        //                .Unwind("value")
+        //                .Project(project)
+        //                .Match(BsonDocument.Parse("{$and:[{'month' : {$eq : " + month.ToString() + "}},{'value':{$lte:" + vm.max.ToString() + " }},{'value':{$gte:" + vm.min.ToString() + "}}]}"))
+        //                .ToList();
+        //        if (aggregationDocument != null)
+        //        {
+        //            foreach (var result in aggregationDocument)
+        //            {
+        //                //Console.WriteLine(result.ToString());
+        //                var hour = result.GetValue("time").ToLocalTime().Hour;
+        //                list.Add(hour, result.GetValue("value").ToDouble());
+        //            }
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        var error = "errorhere";
+        //    }
+
+        //    return list;
+        //}
         private async Task getTheStationData()
         {
             foreach (string c in stationCollections)

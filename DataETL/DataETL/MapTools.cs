@@ -44,7 +44,7 @@ namespace DataETL
         public static List<City> readCities()
         {
             List<City> cities = new List<City>();
-            StreamReader sr = new StreamReader(@"D:\WORK\piloto\Climate\ClimateDataETL\stationGroups\cities.csv");
+            StreamReader sr = new StreamReader(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\stationGroups\cities.csv");
             string line = sr.ReadLine();
             while (line != null)
             {

@@ -10,6 +10,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using ZedGraph;
 using System.Drawing;
+using System.IO;
 
 namespace DataETL
 {
@@ -261,6 +262,19 @@ namespace DataETL
                     if (mth > maxmonth) maxmonth = mth;
                 }
             }
+        }
+        public void printCityMeta()
+        {
+            var cityGroups = db.GetCollection<StationGroup>("cityGroups");
+            List<StationGroup> stationgroups = cityGroups.Find(FilterDefinition<StationGroup>.Empty).ToList();
+            List<City> cities = MapTools.readCities();
+            StreamWriter sw = new StreamWriter(@"C: \Users\Admin\Documents\projects\clusterColombia\climacolombia\cities.csv",false,Encoding.UTF8);
+            foreach (StationGroup sg in stationgroups)
+            {
+                var c = cities.Find(x => x.name == sg.name);
+                sw.WriteLine(c.name + "," + c.location[1] + "," + c.location[0] + ","+(int)c.elevation);
+                    }
+            sw.Close();
         }
         public void groupMonthly()
         {
