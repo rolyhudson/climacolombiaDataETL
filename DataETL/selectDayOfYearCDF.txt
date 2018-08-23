@@ -1,0 +1,102 @@
+private async Task selectDayOfYear(string vcode)
+        {
+            var v = synthYear.variables.Find(x => x.name == vcode);
+            var builder = Builders<RecordMongo>.Filter;
+            string[] pieces;
+
+                List<List<RecordMongo>> possDayValues;
+                for (int doy = 1; doy < 366; doy++)
+                {
+                if (doy == 60) continue;
+                    //each day will have several canadidate days sourced from each collection of same variable
+                    possDayValues = new List<List<RecordMongo>>();
+                    foreach (IMongoCollection<RecordMongo> sd in stationData)
+                    {
+                        //only if the vcode matches
+                        pieces = sd.CollectionNamespace.CollectionName.Split('_');
+                        if (pieces[4] == vcode)
+                        {
+
+                            var project =
+                                BsonDocument.Parse(
+                                    "{value: '$value',time:'$time',dayOfYear: {$dayOfYear: '$time'},year: {$year: '$time'}}");
+                            try
+                            {
+                                var aggregationDocument =
+                                    sd.Aggregate()
+                                        .Unwind("value")
+                                        .Project(project)
+                                        .Match(BsonDocument.Parse("{'dayOfYear' : {$eq : " + doy.ToString() + "}}"))
+                                        .ToList();
+
+                                IEnumerable<IGrouping<int, BsonDocument>> query = aggregationDocument.GroupBy(
+                                    doc => doc.GetValue("year").ToInt32(),
+                                    doc => doc);
+
+                                
+                                foreach (IGrouping<int, BsonDocument> yearDayGroup in query)
+                                {
+                                    var year = yearDayGroup.Key;
+                                    var hours = yearDayGroup.Count();
+                                    //one group per day per year count should be 24
+                                    if (hours == 24)
+                                    {
+                                        List<RecordMongo> dayValues = new List<RecordMongo>();
+                                        foreach (BsonDocument name in yearDayGroup)
+                                        {
+                                            RecordMongo rm = new RecordMongo();
+                                            rm.value = name.GetValue("value").ToDouble();
+                                            rm.time = name.GetValue("time").ToLocalTime();
+                                            dayValues.Add(rm);
+                                        }
+                                        possDayValues.Add(dayValues);
+                                    }
+                                }
+
+                            }
+                            catch (Exception e)
+                            {
+                                var error = "errorhere";
+                            }
+
+                        }
+                    }
+                    if (possDayValues.Count > 0)
+                    {
+                    
+                        List<double> longTermValues = new List<double>();
+                        //list of all candidate days cdfs
+                        List<EmpiricalDistribution> dayCDFS = new List<EmpiricalDistribution>();
+                        foreach(List<RecordMongo> day in possDayValues)
+                        {
+                            List<double> dayValues = new List<double>();
+                            foreach (RecordMongo rm in day)
+                            {
+                                longTermValues.Add(rm.value);
+                                dayValues.Add(rm.value);
+                            }
+                            dayCDFS.Add(new EmpiricalDistribution(dayValues.ToArray()));
+                        }
+                        //longterm cdf all days found
+                        EmpiricalDistribution longterm = new EmpiricalDistribution(longTermValues.ToArray());
+                        List<double> finkelSch = new List<double>();
+                        var range = longterm.GetRange(0.9);
+                        double inc = (range.Max - range.Min) / 20;
+                        
+                        foreach (EmpiricalDistribution candDay in dayCDFS)
+                        {
+                        double sample = range.Min;
+                        double fs = 0;
+                        while (sample<= range.Max)
+                            {
+                            fs += Math.Abs(candDay.DistributionFunction(sample) - longterm.DistributionFunction(sample));
+                            sample += inc;
+                            }
+                        finkelSch.Add(fs / 24);
+                        }
+                    int maxindex = finkelSch.IndexOf(finkelSch.Min());
+                    var selectedday = possDayValues[maxindex];
+                    }
+                }
+            
+        }
