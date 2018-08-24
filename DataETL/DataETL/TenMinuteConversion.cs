@@ -80,7 +80,7 @@ namespace DataETL
             FindOptions<RecordMongo> options = new FindOptions<RecordMongo>
             {
                 BatchSize = 500,
-                NoCursorTimeout = true,
+                NoCursorTimeout = false,
                 Sort = sorter
             };
             DateTime currentHour = new DateTime();
@@ -137,7 +137,7 @@ namespace DataETL
         public string convertNameTo60min(string collection)
         {
             string[] parts = collection.Split('_');
-            string source = parts[2]+"averagedClean";
+            string source = parts[2]+"averaged";
             string newname = parts[0] + "_"+ parts[1] + "_" + source + "_" + parts[3] + "_"+ parts[4] + "_60";
             return newname;
         }

@@ -47,7 +47,7 @@ namespace DataETL
         private void syntheticYear(object sender, EventArgs e)
         {
             CityYearBuilder cyb = new CityYearBuilder();
-            cyb.averageYear();
+            cyb.syntheticYearBatch();
         }
         private void readSyntheticYear(object sender, EventArgs e)
         {
