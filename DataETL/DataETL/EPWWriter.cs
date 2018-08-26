@@ -166,11 +166,40 @@ namespace DataETL
             this.epw.WriteLine(line);
             line.Clear();
         }
-        public double getValue(string vcode,DateTime datetime)
+        public string getValue(string vcode,DateTime datetime)
         {
             var v = synthYear.variables.Find(x => x.name == vcode);
-            var r = v.records.Find(d => d.time == datetime);
-            return r.value;
+            var r = v.records.Find(d => d.time.Month == datetime.Month&& d.time.Day == datetime.Day&& d.time.Hour== datetime.Hour);
+            if (r == null)
+            {
+                switch (vcode)
+                {
+                    case "TS":
+                        return "99.9";
+                    case "NUB":
+                        return "99";
+                    case "VV":
+                        return "999.";
+                    case "DV":
+                        return "999.";
+                    case "PR":
+                        return "999";
+                    case "RS":
+                        return "9999.";
+                    case "HR":
+                        return "999.";
+                    default: return "";
+                }
+            }
+            else
+            {
+                if(r.value==-999.9)
+                {
+                    var b = 0;
+                }
+                return r.value.ToString();
+            }
+            
         }
         private void epwHourlyData()
         {
@@ -185,12 +214,16 @@ namespace DataETL
                 //{ "dbTemp", "rHumid", "wDir", "wSpeed", "diffuseHorizRad", "normDirectRad", "skyCover", "liquidPrecipDepth" };
                 DateTime currentHr = synthYear.variables[0].records[i].time;
                 DateTime localcurrentHr = currentHr.ToLocalTime();
+                if (localcurrentHr.DayOfYear == 67)
+                {
+                    var b = 0;
+                }
                 year = localcurrentHr.Year;
                 month = localcurrentHr.Month;
                 day = localcurrentHr.Day;
                 hour = localcurrentHr.Hour+1;
                 StringBuilder line = new StringBuilder();
-                line.Append("2016,");// N1, \field Year
+                line.Append(year+",");// N1, \field Year
                 line.Append(month.ToString() + ",");//N2, \field Month
                 line.Append(day.ToString() + ",");//N3, \field Day
                 line.Append(hour.ToString() + ","); //N4, \field Hour
@@ -200,23 +233,23 @@ namespace DataETL
                                  //\note Each field is checked for "missing" as shown below.Reasonable values, calculated
                                  //\note values or the last "good" value is substituted.
 
-                line.Append(getValue("TS", currentHr).ToString() + ","); //N6, \field Dry Bulb Temperature\units C\minimum > -70\maximum < 70\missing 99.9
+                line.Append(getValue("TS", currentHr) + ","); //N6, \field Dry Bulb Temperature\units C\minimum > -70\maximum < 70\missing 99.9
                 line.Append("99.9,"); //N7, \field Dew Point Temperature\units C\minimum > -70\maximum < 70\missing 99.9
-                line.Append(getValue("HR", currentHr).ToString() + ","); // N8, \field Relative Humidity\missing 999.\minimum 0\maximum 110
+                line.Append(getValue("HR", currentHr) + ","); // N8, \field Relative Humidity\missing 999.\minimum 0\maximum 110
                 line.Append(pressure.ToString() + ",");// N9, \field Atmospheric Station Pressure\units Pa\missing 999999.\minimum > 31000\maximum < 120000
                 line.Append("9999.,");//N10, \field Extraterrestrial Horizontal Radiation\units Wh / m2\missing 9999.\minimum 0
                 line.Append("9999.,");//N11, \field Extraterrestrial Direct Normal Radiation\units Wh / m2\missing 9999.\minimum 0
                 line.Append("9999.,");//N12, \field Horizontal Infrared Radiation Intensity\units Wh / m2\missing 9999.\minimum 0
                 line.Append("9999.,");//N13, \field Global Horizontal Radiation \units Wh / m2\missing 9999.\minimum 0
-                line.Append(getValue("RS", currentHr).ToString() + ",");//N14, \field Direct Normal Radiation \units Wh / m2\missing 9999.\minimum 0
-                line.Append(getValue("RS", currentHr).ToString() + ",");//N15, \field Diffuse Horizontal Radiation\units Wh / m2\missing 9999.\minimum 0
+                line.Append(getValue("RS", currentHr) + ",");//N14, \field Direct Normal Radiation \units Wh / m2\missing 9999.\minimum 0
+                line.Append("9999.,");//N15, \field Diffuse Horizontal Radiation\units Wh / m2\missing 9999.\minimum 0
                 line.Append("999999.,");//N16, \field Global Horizontal Illuminance\units lux\missing 999999.\note will be missing if > = 999900\minimum 0
                 line.Append("999999.,");//N17, \field Direct Normal Illuminance\units lux\missing 999999.\note will be missing if > = 999900\minimum 0
                 line.Append("999999.,");//N18, \field Diffuse Horizontal Illuminance\units lux\missing 999999.\note will be missing if > = 999900\minimum 0
                 line.Append("9999.,");//N19, \field Zenith Luminance\units Cd / m2\missing 9999.\note will be missing if > = 9999\minimum 0
-                line.Append(getValue("DV", currentHr).ToString() + ",");//N20, \field Wind Direction\units degrees\missing 999.\minimum 0\maximum 360
-                line.Append(getValue("VV", currentHr).ToString() + ",");//N21, \field Wind Speed\units m / s\missing 999.\minimum 0\maximum 40
-                line.Append(getValue("NUB", currentHr).ToString()+",");//N22, \field Total Sky Cover\missing 99\minimum 0\maximum 10
+                line.Append(getValue("DV", currentHr) + ",");//N20, \field Wind Direction\units degrees\missing 999.\minimum 0\maximum 360
+                line.Append(getValue("VV", currentHr) + ",");//N21, \field Wind Speed\units m / s\missing 999.\minimum 0\maximum 40
+                line.Append(getValue("NUB", currentHr)+",");//N22, \field Total Sky Cover\missing 99\minimum 0\maximum 10
                 line.Append("99,");//N23, \field Opaque Sky Cover (used if Horizontal IR Intensity missing)\missing 99\minimum 0\maximum 10
                 line.Append("9999,");//N24, \field Visibility\units km\missing 9999
                 line.Append("99999,");//N25, \field Ceiling Height\units m\missing 99999
@@ -227,7 +260,7 @@ namespace DataETL
                 line.Append("999,");//N30, \field Snow Depth\units cm\missing 999
                 line.Append("99,");//N31, \field Days Since Last Snowfall\missing 99
                 line.Append("999,");//N32, \field Albedo\missing 999
-                line.Append(getValue("PR", currentHr).ToString() + ",");//N33, \field Liquid Precipitation Depth\units mm\missing 999
+                line.Append(getValue("PR", currentHr) + ",");//N33, \field Liquid Precipitation Depth\units mm\missing 999
                 line.Append("99,");//N34; \field Liquid Precipitation Quantityunits hr\missing 99
                 this.epw.WriteLine(line);
                 line.Clear();

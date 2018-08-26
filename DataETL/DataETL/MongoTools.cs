@@ -60,6 +60,41 @@ namespace DataETL
                 }
             }
         }
+        public static void cloudCleaner()
+        {
+            IMongoDatabase db = MongoTools.connect("mongodb://localhost", "climaColombia");
+            //clean up bog buc with PA variable
+            List<string> collNames = MongoTools.collectionNames(db);
+            foreach (string collection in collNames)
+            {
+                if (collection.Contains("NUB"))
+                {
+                    var coll = db.GetCollection<BsonDocument>(collection);
+
+                    var project = BsonDocument.Parse(
+                               "{minute: {$minute: '$time'}}");
+                    try
+                    {
+                       
+                        var aggregationDocument =
+                            coll.Aggregate()
+                                .Project(project)
+                                .Match(BsonDocument.Parse("{'minute':{$gt:0 }}"))
+                                .ToList();
+                       
+                        
+                        foreach (BsonDocument bd in aggregationDocument)
+                        {
+                            var id = bd.GetValue("_id").ToString();
+                            ObjectId oid = new ObjectId(id);
+                           
+                            coll.DeleteOne(Builders<BsonDocument>.Filter.Eq("_id",oid));
+                        }
+                    }
+                    catch (Exception e) { }
+                }
+            }
+        }
         public static void cleanUp()
         {
             IMongoDatabase db = MongoTools.connect("mongodb://localhost", "climaColombia");
@@ -67,7 +102,7 @@ namespace DataETL
             List<string> collNames = MongoTools.collectionNames(db);
             foreach (string collection in collNames)
             {
-                if (collection.Contains("averaged"))
+                if (collection.Contains("cdfDaySelector"))
                 {
                     var coll = db.GetCollection<BsonDocument>(collection);
                     var t = coll.Find(new BsonDocument()).ToList();

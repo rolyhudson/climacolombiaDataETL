@@ -21,11 +21,24 @@ namespace DataETL
         }
         public void readSythYearFromDB()
         {
-            //var coll = db.GetCollection<SyntheticYear>(city+ "TestYearDaySelector");
-            //List<SyntheticYear> synthYear = coll.Find(FilterDefinition<SyntheticYear>.Empty).ToList();
-            //synthYear[0].name = city;
-            //synthYear[0].info = AnnualSummary.getStationFromMongo(21206960, db);
-            //EPWWriter epww = new EPWWriter(synthYear[0], @"D:\WORK\piloto\Climate\epw");
+            stations = StationGrouping.getAllStationsFromDB(db);
+            var coll = db.GetCollection<StationGroup>("cityGroups");
+            var allCityGroups = coll.Find(FilterDefinition<StationGroup>.Empty).ToList();
+            foreach (StationGroup sg in allCityGroups)
+            {
+                var city = sg.name;
+                //city == "SANTA FE DE BOGOTÁ" || city == "MEDELLÍN" || averaged
+                if (city == "CARTAGENA" || city == "MEDELLÍN")
+                {
+                    var collection = db.GetCollection<SyntheticYear>(city + "cdfDaySelector");
+                    List<SyntheticYear> synthYear = collection.Find(FilterDefinition<SyntheticYear>.Empty).ToList();
+                    synthYear[0].name += "_cdfDay";
+                    synthYear[0].info = AnnualSummary.getStationFromMongo(21206960, db);
+                    EPWWriter epww = new EPWWriter(synthYear[0], @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate");
+                }
+
+            }
+            
         }
         public async Task syntheticYearDataPrep()
         {
@@ -55,41 +68,29 @@ namespace DataETL
             foreach (StationGroup sg in allCityGroups)
             {
                 var city = sg.name;
-                if (city == "SANTA FE DE BOGOTÁ" || city == "MEDELLÍN" || city == "CARTAGENA")
+                if (city == "CARTAGENA" || city == "MEDELLÍN")
                 {
                     var cityGroup = allCityGroups.Find(x => x.name == city);
                     var stationCollNames = getStationsColNames(cityGroup);
                     var stationData = getTheStationData(stationCollNames);
                     SyntheticYear synthYear = new SyntheticYear();
                     synthYear.name = city;
-                    foreach (CollectionMongo c in synthYear.variables)
-                    {
-                        //await averageOneVariableList(c.name);
-                        await selectDayOfYearCDF(c.name, synthYear, stationData);
-                    }
+                    await getDaysForVariables(synthYear, stationData);
                     insertSytheticYear(city + "cdfDaySelector", synthYear);
                 }
             }
         }
-        //public async Task averageYear()
-        //{
-        //    //getStationData();
-        //    //SyntheticYear synthYear = new SyntheticYear();
-        //    //getTheStationData();
-        //    ////Task  f = Task.Run(() => { averageTheVariables(); });
-
-        //    ////f.Wait();
-        //    //await averageTheVariables();
-        //    //insertSytheticYear(city+"TestYearDaySelector");
-        //}
-        //private async Task averageTheVariables(SyntheticYear synthYear)
-        //{
-        //    foreach (CollectionMongo c in synthYear.variables)
-        //    {
-        //        //await averageOneVariableList(c.name);
-        //        await selectDayOfYear(c.name, synthYear);
-        //    }
-        //}
+        private async Task getDaysForVariables(SyntheticYear synthYear, List<IMongoCollection<RecordMongo>> stationData)
+        {
+            Task.WhenAll(synthYear.variables.Select(c => selectDayOfYearCDF(c.name, synthYear, stationData)));
+            //foreach (CollectionMongo c in synthYear.variables)
+            //{
+            //    //await averageOneVariableList(c.name);
+            //    await Task.Run(() => selectDayOfYearCDF(c.name, synthYear, stationData));
+                
+            //}
+        }
+        
         public void insertSytheticYear(string collectionName,SyntheticYear synthYear)
         {
             var collection = db.GetCollection<SyntheticYear>(collectionName);
@@ -211,12 +212,17 @@ namespace DataETL
             var v = synthYear.variables.Find(x => x.name == vcode);
             var builder = Builders<RecordMongo>.Filter;
             string[] pieces;
-            VariableMeta vm; 
+            VariableMeta vm;
+            List<int> missingDays = new List<int>();
             List<List<RecordMongo>> possDayValues;
             for (int doy = 1; doy < 366; doy++)
             {
                 //no leap year in epw
-                
+                if(doy==67)
+                {
+
+                    var br = 0;
+                }
                 //each day will have several canadidate days sourced from each collection of same variable
                 possDayValues = new List<List<RecordMongo>>();
                 foreach (IMongoCollection<RecordMongo> sd in stationData)
@@ -232,7 +238,7 @@ namespace DataETL
                         vm = AnnualSummary.getVariableMetaFromDB(vcode, source, db);
                         var project =
                             BsonDocument.Parse(
-                                "{value: '$value',time:'$time',dayOfYear: {$dayOfYear: '$time'},year: {$year: '$time'}}");
+                                "{value: '$value',time:'$time',dayOfYear: {$dayOfYear: '$time'},year: {$year: '$time'},minute: {$minute: '$time'}}");
                         try
                         {
                             //.Match(BsonDocument.Parse("{'dayOfYear' : {$eq : " + doy.ToString() + "}}"))
@@ -242,6 +248,7 @@ namespace DataETL
                                     .Project(project)
                                     .Match(BsonDocument.Parse("{$and:[" +
                                     "{'dayOfYear' : {$eq : " + doy.ToString() + "}}" +
+                                    "{'minute':{$eq:0 }}" +
                                     ",{'value':{$lte:" + vm.max.ToString() + " }}" +
                                     ",{'value':{$gte:" + vm.min.ToString() + "}}]}"))
                                     .ToList();
@@ -249,7 +256,10 @@ namespace DataETL
                             IEnumerable<IGrouping<int, BsonDocument>> query = aggregationDocument.GroupBy(
                                 doc => doc.GetValue("year").ToInt32(),
                                 doc => doc);
-
+                            if(vcode=="NUB")
+                            {
+                                var b = 0;
+                            }
 
                             foreach (IGrouping<int, BsonDocument> yearDayGroup in query)
                             {
@@ -262,7 +272,20 @@ namespace DataETL
                                     foreach (BsonDocument name in yearDayGroup)
                                     {
                                         RecordMongo rm = new RecordMongo();
-                                        rm.value = name.GetValue("value").ToDouble();
+                                        
+                                        double value = name.GetValue("value").ToDouble();
+                                        //check nub and HRs are in the right range
+                                        if (vcode == "HR" && value <= 1)
+                                        {
+                                            value = value * 100;
+                                        }
+                                        if (vcode == "NUB")
+                                        {
+                                            //noaa's cloud is oktas
+                                            if (value == 9) value = 10;
+                                            else { value = (int)(value / 8.0 * 10); }
+                                        }
+                                        rm.value = value;
                                         rm.time = name.GetValue("time").ToLocalTime();
                                         dayValues.Add(rm);
                                     }
@@ -280,13 +303,39 @@ namespace DataETL
                 }
                 if (possDayValues.Count > 0)
                 {
-                    List<RecordMongo> dayToInsert = typicalDay(possDayValues);
+                    List<RecordMongo> dayToInsert = typicalDay(possDayValues,vcode);
                     addValuesToSynthYear(dayToInsert,ref v, doy, vcode);
                 }
+                else
+                {
+                    //no possible days found empty day
+                    missingDays.Add(doy);
+                }
             }
+            if(missingDays.Count>0)
+            {
+                fillMissingDays(missingDays);
+            }
+            //fill missing days
 
         }
-        private List<RecordMongo> typicalDay(List<List<RecordMongo>> possDayValues)
+        private void fillMissingDays(List<int> missingDays)
+        {
+            //get 3 days before and 3 after
+            foreach (int day in missingDays)
+            {
+                for (int i = day - 3; i <= day + 3; i++)
+                {
+                    if (i == day) continue;
+
+                }
+            }
+        }
+        private void fillHours()
+        {
+
+        }
+        private List<RecordMongo> typicalDay(List<List<RecordMongo>> possDayValues,string vcode)
         {
             List<double> longTermValues = new List<double>();
             //list of all candidate days cdfs
@@ -296,8 +345,12 @@ namespace DataETL
                 List<double> dayValues = new List<double>();
                 foreach (RecordMongo rm in day)
                 {
-                    longTermValues.Add(rm.value);
-                    dayValues.Add(rm.value);
+                    if (rm.value != -999.9)
+                    {
+                        //only actual values in the cdfs
+                        longTermValues.Add(rm.value);
+                        dayValues.Add(rm.value);
+                    }
                 }
                 dayCDFS.Add(new EmpiricalDistribution(dayValues.ToArray()));
             }
@@ -319,8 +372,8 @@ namespace DataETL
                 //24 is the n values per day
                 finkelSch.Add(fs / 24);
             }
-            int maxindex = finkelSch.IndexOf(finkelSch.Min());
-            List<RecordMongo> selectedday = possDayValues[maxindex];
+            int minindex = finkelSch.IndexOf(finkelSch.Min());
+            List<RecordMongo> selectedday = possDayValues[minindex];
             return selectedday;
         }
         private void addValuesToSynthYear(List<RecordMongo> candidateDay,ref CollectionMongo variableRecords,int doy,string vcode)
@@ -329,31 +382,29 @@ namespace DataETL
             {
                 //assign to synthetic year
                 List<RecordMongo> synthDay = variableRecords.records.FindAll(x => x.time.DayOfYear == doy);
-                //doy 60 does not exisit
+                
                 if (synthDay.Count > 0)
                 {
                     foreach (RecordMongo cm in candidateDay)
                     {
                         double value = cm.value;
-                        if (vcode == "HR" && value <= 1) value = value * 100;
-                        if (vcode == "NUB")
-                        {
-                            if (value == 9) value = 10;
-                            value = (int)(value / 8.0 * 10);
-                        }
+                        
 
                         RecordMongo synthRecordForUpdate = synthDay.Find(x => x.time.Hour == cm.time.Hour);
                         synthRecordForUpdate.value = value;
-                        //set the year to match the typical day's year
-                        DateTime update = new DateTime(cm.time.Year, synthRecordForUpdate.time.Month, synthRecordForUpdate.time.Day,
-                            synthRecordForUpdate.time.Hour,0,0);
-                        synthRecordForUpdate.time=update;
                     }
                 }
             }
             catch (Exception e)
             {
                 var error = "errorhere";
+            }
+        }
+        private void simpleHoleFill(ref List<RecordMongo> candidateDay, CollectionMongo variableRecords)
+        {
+            foreach (RecordMongo cm in candidateDay)
+            {
+               
             }
         }
         private async Task selectDayOfYear(string vcode,SyntheticYear synthYear, List<IMongoCollection<RecordMongo>> stationData)
@@ -630,7 +681,7 @@ namespace DataETL
         public string name { get; set; }
         public Station info { get; set; }
         public List<CollectionMongo> variables { get; set; }
-        private string[] vNames = new string[] { "VV", "DV", "TS", "PR", "NUB", "HR", "RS" };
+        private string[] vNames = new string[] { "NUB", "TS", "DV", "VV", "PR", "HR", "RS" };
         public SyntheticYear()
         {
             variables = new List<CollectionMongo>();

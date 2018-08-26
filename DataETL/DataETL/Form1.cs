@@ -35,6 +35,10 @@ namespace DataETL
         {
             MongoTools.checkAveraging();
         }
+        private void cloudClean(object sender, EventArgs e)
+        {
+            MongoTools.cloudCleaner();
+        }
         private void checkIndexes(object sender, EventArgs e)
         {
             MongoTools.checkIndexes();
