@@ -195,7 +195,24 @@ namespace DataETL
             {
                 if(r.value==-999.9)
                 {
-                    var b = 0;
+                    switch (vcode)
+                    {
+                        case "TS":
+                            return "99.9";
+                        case "NUB":
+                            return "99";
+                        case "VV":
+                            return "999.";
+                        case "DV":
+                            return "999.";
+                        case "PR":
+                            return "999";
+                        case "RS":
+                            return "9999.";
+                        case "HR":
+                            return "999.";
+                        default: return "";
+                    }
                 }
                 return r.value.ToString();
             }

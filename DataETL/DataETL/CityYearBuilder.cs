@@ -28,7 +28,7 @@ namespace DataETL
             {
                 var city = sg.name;
                 //city == "SANTA FE DE BOGOTÁ" || city == "MEDELLÍN" || averaged
-                if (city == "CARTAGENA" || city == "MEDELLÍN")
+                if (city == "CARTAGENA")
                 {
                     var collection = db.GetCollection<SyntheticYear>(city + "cdfDaySelector");
                     List<SyntheticYear> synthYear = collection.Find(FilterDefinition<SyntheticYear>.Empty).ToList();
@@ -40,6 +40,7 @@ namespace DataETL
             }
             
         }
+        
         public async Task syntheticYearDataPrep()
         {
             stations = StationGrouping.getAllStationsFromDB(db);
@@ -68,7 +69,7 @@ namespace DataETL
             foreach (StationGroup sg in allCityGroups)
             {
                 var city = sg.name;
-                if (city == "CARTAGENA" || city == "MEDELLÍN")
+                if (city == "CARTAGENA" )
                 {
                     var cityGroup = allCityGroups.Find(x => x.name == city);
                     var stationCollNames = getStationsColNames(cityGroup);
@@ -76,19 +77,115 @@ namespace DataETL
                     SyntheticYear synthYear = new SyntheticYear();
                     synthYear.name = city;
                     await getDaysForVariables(synthYear, stationData);
+                    
+                    holeFiller(holeFinder(ref synthYear), ref synthYear);
                     insertSytheticYear(city + "cdfDaySelector", synthYear);
+                }
+            }
+        }
+        private void nightRadiation(ref CollectionMongo radvariables)
+        {
+            foreach (RecordMongo rm in radvariables.records)
+            {
+                if(rm.time.Hour<6||rm.time.Hour>6)
+                {
+                    rm.value = 0;
+                }
+            }
+        }
+        private List<Hole> holeFinder(ref SyntheticYear synthYear)
+        {
+            //fix night radiaiton
+            var rs = synthYear.variables.Find(x => x.name == "RS");
+            nightRadiation(ref rs);
+            List<Hole> allHoles = new List<Hole>();
+            foreach (CollectionMongo c in synthYear.variables)
+            {
+                
+                bool newhole = true;
+                Hole h = new Hole();
+                DateTime prevDT = new DateTime();
+                foreach (RecordMongo rm in c.records)
+                {
+                    
+                    if (rm.value==-999.9)
+                    {
+                        if (newhole)
+                        {
+                            //found first of new hole
+                            h = new Hole();
+                            h.vcode = c.name;
+                            h.setHoleStart(rm.time);
+                            newhole = false;
+                        }
+                    }
+                    if(rm.value!=-999.9&&!newhole)
+                    {
+                        //end of hole
+                        h.setHoleEnd(prevDT);
+                        newhole = true;
+                        allHoles.Add(h);
+                    }
+                    prevDT = rm.time;
+                }
+                //hole at end of year
+                if(!newhole)
+                {
+                    h.setHoleEnd(prevDT);
+                    newhole = true;
+                    allHoles.Add(h);
+                }
+
+            }
+            return allHoles;
+        }
+        private void holeFiller(List<Hole> allHoles, ref SyntheticYear synthYear)
+        {
+            DateTime start = new DateTime();
+            DateTime end = new DateTime();
+            DateTime current = new DateTime();
+            foreach(Hole h in allHoles)
+            {
+                TimeSpan holesize = h.getHoleEnd() - h.getHoleStart();
+                if(holesize.Hours<5)
+                {
+                    start = h.getHoleStart().AddHours(-1);
+                    if (h.getHoleEnd().Month == 12 && h.getHoleEnd().Day == 31 && h.getHoleEnd().Hour == 23)
+                    {
+                        //hole at final hour
+                        end = new DateTime(start.Year, 1, 1, 0, 0, 0);
+                    }
+                    else { end = h.getHoleEnd().AddHours(1); }
+                    
+                    //interpolation
+                    double v1 = synthYear.variables.Find(x => x.name == h.vcode).records.Find(r => r.time == start).value;
+                    double v2 = synthYear.variables.Find(x => x.name == h.vcode).records.Find(r => r.time == end).value;
+                    double range = v2 - v1;
+                    double inc = range / (holesize.Hours + 2);
+                    for (int i = 1;i<=holesize.Hours+1;i++)
+                    {
+                        current = start.AddHours(i);
+                        try
+                        {
+                            var tofill = synthYear.variables.Find(x => x.name == h.vcode).records.Find(r => r.time == current);
+                            tofill.value = v1 + (i * inc);
+                        }
+                        catch(Exception e)
+                        {
+
+                        }
+                    }
+                }
+                else
+                {
+                    //select from neighour hood of days in week
                 }
             }
         }
         private async Task getDaysForVariables(SyntheticYear synthYear, List<IMongoCollection<RecordMongo>> stationData)
         {
             Task.WhenAll(synthYear.variables.Select(c => selectDayOfYearCDF(c.name, synthYear, stationData)));
-            //foreach (CollectionMongo c in synthYear.variables)
-            //{
-            //    //await averageOneVariableList(c.name);
-            //    await Task.Run(() => selectDayOfYearCDF(c.name, synthYear, stationData));
-                
-            //}
+
         }
         
         public void insertSytheticYear(string collectionName,SyntheticYear synthYear)
@@ -266,7 +363,8 @@ namespace DataETL
                                 var year = yearDayGroup.Key;
                                 var hours = yearDayGroup.Count();
                                 //one group per day per year count should be 24
-                                if (hours == 24)
+                                //but many noaa data are sometimes day time only 6-6 12 readings
+                                if (hours >=12)
                                 {
                                     List<RecordMongo> dayValues = new List<RecordMongo>();
                                     foreach (BsonDocument name in yearDayGroup)
@@ -331,10 +429,7 @@ namespace DataETL
                 }
             }
         }
-        private void fillHours()
-        {
-
-        }
+        
         private List<RecordMongo> typicalDay(List<List<RecordMongo>> possDayValues,string vcode)
         {
             List<double> longTermValues = new List<double>();
@@ -388,8 +483,6 @@ namespace DataETL
                     foreach (RecordMongo cm in candidateDay)
                     {
                         double value = cm.value;
-                        
-
                         RecordMongo synthRecordForUpdate = synthDay.Find(x => x.time.Hour == cm.time.Hour);
                         synthRecordForUpdate.value = value;
                     }
@@ -673,6 +766,36 @@ namespace DataETL
                 }
             }
             return records;
+        }
+    }
+    class Hole
+    {
+        private DateTime holeStart { get; set; }
+        private DateTime holeEnd { get; set; }
+        public string vcode { get; set; }
+
+        public void setHoleEnd(DateTime end)
+        {
+            if(end<this.holeStart)
+            {
+                this.holeStart = end;
+            }
+            else
+            {
+                this.holeEnd = end;
+            }
+        }
+        public void setHoleStart(DateTime start)
+        {
+            this.holeStart = start;
+        }
+        public DateTime getHoleEnd()
+        {
+            return this.holeEnd;
+        }
+        public DateTime getHoleStart()
+        {
+            return this.holeStart;
         }
     }
     class SyntheticYear
