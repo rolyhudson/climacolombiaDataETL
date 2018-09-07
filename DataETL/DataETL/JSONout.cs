@@ -13,7 +13,7 @@ namespace DataETL
     {
         public static void regionsToGEOJSON(List<Region> regions)
         {
-            StreamWriter sw = new StreamWriter(@"D:\WORK\piloto\webDev\tools\180622\regionsGEOJSON.json");
+            StreamWriter sw = new StreamWriter(@"C:\Users\Admin\Documents\projects\IAPP\piloto\webDev\tools\180622\regionsGEOJSON.json");
             using (JsonTextWriter writer = new JsonTextWriter(sw))
             {
                 writer.Formatting = Formatting.Indented;

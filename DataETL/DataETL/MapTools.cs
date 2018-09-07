@@ -107,7 +107,7 @@ namespace DataETL
 
         public static List<Region> readRegions()
         {
-            StreamReader sr = new StreamReader(@"D:\WORK\piloto\Climate\ClimateDataETL\stationGroups\regions.csv");
+            StreamReader sr = new StreamReader(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\stationGroups\regions.csv");
             List<Region> regions = new List<Region>();
             string line = sr.ReadLine();
             while (line != null)

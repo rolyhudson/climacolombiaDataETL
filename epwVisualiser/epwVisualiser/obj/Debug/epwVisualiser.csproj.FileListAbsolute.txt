@@ -1,0 +1,12 @@
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\epwVisualiser\epwVisualiser\bin\Debug\epwVisualiser.exe.config
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\epwVisualiser\epwVisualiser\bin\Debug\epwVisualiser.exe
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\epwVisualiser\epwVisualiser\bin\Debug\epwVisualiser.pdb
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\epwVisualiser\epwVisualiser\obj\Debug\epwVisualiser.csprojAssemblyReference.cache
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\epwVisualiser\epwVisualiser\obj\Debug\epwVisualiser.Form1.resources
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\epwVisualiser\epwVisualiser\obj\Debug\epwVisualiser.Properties.Resources.resources
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\epwVisualiser\epwVisualiser\obj\Debug\epwVisualiser.csproj.GenerateResource.cache
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\epwVisualiser\epwVisualiser\obj\Debug\epwVisualiser.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\epwVisualiser\epwVisualiser\obj\Debug\epwVisualiser.exe
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\epwVisualiser\epwVisualiser\obj\Debug\epwVisualiser.pdb
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\epwVisualiser\epwVisualiser\bin\Debug\ColorMine.dll
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\epwVisualiser\epwVisualiser\obj\Debug\epwVisualiser.csproj.CopyComplete

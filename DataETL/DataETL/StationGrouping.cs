@@ -86,8 +86,8 @@ namespace DataETL
         public void outputJSON()
         {
             JSONout.regionsToGEOJSON(regions);
-            JSONout.writeGroup(stationsByRegion, @"D:\WORK\piloto\webDev\tools\180707\regionalstations.json",stations,cities);
-            JSONout.writeGroup(stationsByCity, @"D:\WORK\piloto\webDev\tools\180707\citygroups.json",stations,cities);
+            JSONout.writeGroup(stationsByRegion, @"C:\Users\Admin\Documents\projects\IAPP\piloto\webDev\tools\180707\regionalstations.json", stations,cities);
+            JSONout.writeGroup(stationsByCity, @"C:\Users\Admin\Documents\projects\IAPP\piloto\webDev\tools\180707\citygroups.json", stations,cities);
         }
         public void insertManyRecord(string collectionName,List<StationGroup> groups)
         {
@@ -127,7 +127,7 @@ namespace DataETL
                 //get the ref station details
                 Station s = stations.Find(x => x.code == ss.code);
                 if (s == null) s = new Station();
-                sw.WriteLine(s.latitude + "," + s.longitude);
+                sw.WriteLine(s.name + "," + s.source + "," + s.latitude + "," + s.longitude+ "," +s.elevation);
             }
             sw.Close();
         }

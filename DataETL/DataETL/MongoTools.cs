@@ -102,11 +102,11 @@ namespace DataETL
             List<string> collNames = MongoTools.collectionNames(db);
             foreach (string collection in collNames)
             {
-                if (collection.Contains("cdfDaySelector"))
+                if (collection.Contains("average"))
                 {
                     var coll = db.GetCollection<BsonDocument>(collection);
                     var t = coll.Find(new BsonDocument()).ToList();
-                    db.DropCollection(collection);
+                    //db.DropCollection(collection);
                 }
             }
         }

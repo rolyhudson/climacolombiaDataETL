@@ -1,0 +1,172 @@
+INFO: process launched
+INFO: starting batch of synth years
+INFO: found ref data for BARRANQUILLA synth year
+INFO: calculated hourly values for BARRANQUILLA synth year
+INFO: calculated data for BARRANQUILLA synth year
+WARN: NUB holefilling error between 01/01/2001 00:00:00 and 01/01/2001 00:00:00
+WARN: PR holefilling error between 01/01/2001 00:00:00 and 01/01/2001 00:00:00
+INFO: hole filling succeeded for BARRANQUILLA synth year
+INFO: BARRANQUILLA synth year was stored in DB
+INFO: found ref data for VALLEDUPAR synth year
+INFO: calculated hourly values for VALLEDUPAR synth year
+INFO: calculated data for VALLEDUPAR synth year
+INFO: hole filling succeeded for VALLEDUPAR synth year
+INFO: VALLEDUPAR synth year was stored in DB
+INFO: found ref data for POPAYÁN synth year
+INFO: calculated hourly values for POPAYÁN synth year
+INFO: calculated data for POPAYÁN synth year
+INFO: hole filling succeeded for POPAYÁN synth year
+INFO: POPAYÁN synth year was stored in DB
+INFO: found ref data for FLORENCIA synth year
+INFO: calculated hourly values for FLORENCIA synth year
+INFO: calculated data for FLORENCIA synth year
+INFO: hole filling succeeded for FLORENCIA synth year
+INFO: FLORENCIA synth year was stored in DB
+INFO: found ref data for MITU synth year
+INFO: calculated hourly values for MITU synth year
+INFO: calculated data for MITU synth year
+INFO: hole filling succeeded for MITU synth year
+INFO: MITU synth year was stored in DB
+INFO: found ref data for MOCOA synth year
+INFO: calculated hourly values for MOCOA synth year
+INFO: calculated data for MOCOA synth year
+INFO: hole filling succeeded for MOCOA synth year
+INFO: MOCOA synth year was stored in DB
+INFO: found ref data for TUNJA synth year
+INFO: calculated hourly values for TUNJA synth year
+INFO: calculated data for TUNJA synth year
+INFO: hole filling succeeded for TUNJA synth year
+INFO: TUNJA synth year was stored in DB
+INFO: found ref data for YOPAL synth year
+INFO: calculated hourly values for YOPAL synth year
+INFO: calculated data for YOPAL synth year
+INFO: hole filling succeeded for YOPAL synth year
+INFO: YOPAL synth year was stored in DB
+INFO: found ref data for CARTAGENA synth year
+INFO: calculated hourly values for CARTAGENA synth year
+INFO: calculated data for CARTAGENA synth year
+WARN: PR holefilling error between 01/01/2001 00:00:00 and 01/01/2001 00:00:00
+INFO: hole filling succeeded for CARTAGENA synth year
+INFO: CARTAGENA synth year was stored in DB
+INFO: found ref data for SINCELEJO synth year
+INFO: calculated hourly values for SINCELEJO synth year
+INFO: calculated data for SINCELEJO synth year
+INFO: hole filling succeeded for SINCELEJO synth year
+INFO: SINCELEJO synth year was stored in DB
+INFO: found ref data for MANIZALES synth year
+INFO: calculated hourly values for MANIZALES synth year
+INFO: calculated data for MANIZALES synth year
+INFO: hole filling succeeded for MANIZALES synth year
+INFO: MANIZALES synth year was stored in DB
+INFO: found ref data for PEREIRA synth year
+INFO: calculated hourly values for PEREIRA synth year
+INFO: calculated data for PEREIRA synth year
+INFO: hole filling succeeded for PEREIRA synth year
+INFO: PEREIRA synth year was stored in DB
+INFO: found ref data for INÍRIDA synth year
+INFO: calculated hourly values for INÍRIDA synth year
+INFO: calculated data for INÍRIDA synth year
+INFO: hole filling succeeded for INÍRIDA synth year
+INFO: INÍRIDA synth year was stored in DB
+INFO: found ref data for CALI synth year
+INFO: calculated hourly values for CALI synth year
+INFO: calculated data for CALI synth year
+WARN: PR holefilling error between 01/01/2001 00:00:00 and 01/01/2001 00:00:00
+INFO: hole filling succeeded for CALI synth year
+INFO: CALI synth year was stored in DB
+INFO: found ref data for IBAGUÉ synth year
+INFO: calculated hourly values for IBAGUÉ synth year
+INFO: calculated data for IBAGUÉ synth year
+INFO: hole filling succeeded for IBAGUÉ synth year
+INFO: IBAGUÉ synth year was stored in DB
+INFO: found ref data for ARMENIA synth year
+INFO: calculated hourly values for ARMENIA synth year
+INFO: calculated data for ARMENIA synth year
+INFO: hole filling succeeded for ARMENIA synth year
+INFO: ARMENIA synth year was stored in DB
+INFO: found ref data for VILLAVICENCIO synth year
+INFO: calculated hourly values for VILLAVICENCIO synth year
+INFO: calculated data for VILLAVICENCIO synth year
+INFO: hole filling succeeded for VILLAVICENCIO synth year
+INFO: VILLAVICENCIO synth year was stored in DB
+INFO: found ref data for LETICIA synth year
+INFO: calculated hourly values for LETICIA synth year
+INFO: calculated data for LETICIA synth year
+WARN: DV holefilling error between 01/01/2001 00:00:00 and 01/01/2001 03:00:00
+WARN: PR holefilling error between 01/01/2001 00:00:00 and 01/01/2001 00:00:00
+INFO: hole filling succeeded for LETICIA synth year
+INFO: LETICIA synth year was stored in DB
+INFO: found ref data for MEDELLÍN synth year
+INFO: calculated hourly values for MEDELLÍN synth year
+INFO: calculated data for MEDELLÍN synth year
+INFO: hole filling succeeded for MEDELLÍN synth year
+INFO: MEDELLÍN synth year was stored in DB
+INFO: found ref data for ARAUCA synth year
+INFO: calculated hourly values for ARAUCA synth year
+INFO: calculated data for ARAUCA synth year
+WARN: NUB holefilling error between 01/01/2001 00:00:00 and 01/01/2001 00:00:00
+WARN: TS holefilling error between 01/01/2001 00:00:00 and 01/01/2001 00:00:00
+WARN: DV holefilling error between 01/01/2001 00:00:00 and 01/01/2001 00:00:00
+WARN: VV holefilling error between 01/01/2001 00:00:00 and 01/01/2001 00:00:00
+WARN: HR holefilling error between 01/01/2001 00:00:00 and 01/01/2001 00:00:00
+INFO: hole filling succeeded for ARAUCA synth year
+INFO: ARAUCA synth year was stored in DB
+INFO: found ref data for RIOHACHA synth year
+INFO: calculated hourly values for RIOHACHA synth year
+INFO: calculated data for RIOHACHA synth year
+INFO: hole filling succeeded for RIOHACHA synth year
+INFO: RIOHACHA synth year was stored in DB
+INFO: found ref data for NEIVA synth year
+INFO: calculated hourly values for NEIVA synth year
+INFO: calculated data for NEIVA synth year
+INFO: hole filling succeeded for NEIVA synth year
+INFO: NEIVA synth year was stored in DB
+INFO: found ref data for SAN JOSÉ DEL GUAVIARE synth year
+INFO: calculated hourly values for SAN JOSÉ DEL GUAVIARE synth year
+INFO: calculated data for SAN JOSÉ DEL GUAVIARE synth year
+INFO: hole filling succeeded for SAN JOSÉ DEL GUAVIARE synth year
+INFO: SAN JOSÉ DEL GUAVIARE synth year was stored in DB
+INFO: found ref data for BUCARAMANGA synth year
+INFO: calculated hourly values for BUCARAMANGA synth year
+INFO: calculated data for BUCARAMANGA synth year
+INFO: hole filling succeeded for BUCARAMANGA synth year
+INFO: BUCARAMANGA synth year was stored in DB
+INFO: found ref data for QUIBDÓ synth year
+INFO: calculated hourly values for QUIBDÓ synth year
+INFO: calculated data for QUIBDÓ synth year
+INFO: hole filling succeeded for QUIBDÓ synth year
+INFO: QUIBDÓ synth year was stored in DB
+INFO: found ref data for MONTERÍA synth year
+INFO: calculated hourly values for MONTERÍA synth year
+INFO: calculated data for MONTERÍA synth year
+INFO: hole filling succeeded for MONTERÍA synth year
+INFO: MONTERÍA synth year was stored in DB
+INFO: found ref data for CÚCUTA synth year
+INFO: calculated hourly values for CÚCUTA synth year
+INFO: calculated data for CÚCUTA synth year
+INFO: hole filling succeeded for CÚCUTA synth year
+INFO: CÚCUTA synth year was stored in DB
+INFO: found ref data for PASTO synth year
+INFO: calculated hourly values for PASTO synth year
+INFO: calculated data for PASTO synth year
+INFO: hole filling succeeded for PASTO synth year
+INFO: PASTO synth year was stored in DB
+INFO: found ref data for SAN ANDRES synth year
+INFO: calculated hourly values for SAN ANDRES synth year
+INFO: calculated data for SAN ANDRES synth year
+INFO: hole filling succeeded for SAN ANDRES synth year
+INFO: SAN ANDRES synth year was stored in DB
+INFO: found ref data for PUERTO CARREÑO synth year
+INFO: calculated hourly values for PUERTO CARREÑO synth year
+INFO: calculated data for PUERTO CARREÑO synth year
+WARN: NUB holefilling error between 01/01/2001 00:00:00 and 01/01/2001 01:00:00
+WARN: TS holefilling error between 01/01/2001 00:00:00 and 01/01/2001 01:00:00
+WARN: VV holefilling error between 01/01/2001 00:00:00 and 01/01/2001 01:00:00
+WARN: HR holefilling error between 01/01/2001 00:00:00 and 01/01/2001 01:00:00
+INFO: hole filling succeeded for PUERTO CARREÑO synth year
+INFO: PUERTO CARREÑO synth year was stored in DB
+INFO: found ref data for SANTA MARTA synth year
+INFO: calculated hourly values for SANTA MARTA synth year
+INFO: calculated data for SANTA MARTA synth year
+INFO: hole filling succeeded for SANTA MARTA synth year
+INFO: SANTA MARTA synth year was stored in DB

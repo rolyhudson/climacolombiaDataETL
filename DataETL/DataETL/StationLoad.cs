@@ -27,7 +27,7 @@ namespace DataETL
         }
         private void dumpText()
         {
-            StreamWriter sw = new StreamWriter("D:\\WORK\\piloto\\Climate\\stationsCombined.csv");
+            StreamWriter sw = new StreamWriter("C:\\Users\\Admin\\Documents\\projects\\IAPP\\piloto\\Climate\\stationsCombined.csv");
             foreach(Station s in stations)
             {
                 sw.WriteLine(s.source + "," + s.code.ToString());
@@ -98,7 +98,7 @@ namespace DataETL
         }
         public void getIDEAMstatioInfo()
         {
-            StreamReader sr = new StreamReader("D:\\WORK\\piloto\\Climate\\IDEAM\\Estaciones_del_IDEAM.csv");
+            StreamReader sr = new StreamReader("C:\\Users\\Admin\\Documents\\projects\\IAPP\\piloto\\Climate\\IDEAM\\Estaciones_del_IDEAM.csv");
             string line = sr.ReadLine();
             line = sr.ReadLine();
             while (line != null)
@@ -113,7 +113,16 @@ namespace DataETL
                 
                 sm.latitude = Convert.ToDouble(chunks[9]);
                 sm.longitude = Convert.ToDouble(chunks[10]);
-                sm.elevation = Convert.ToDouble(chunks[11].Replace(".", string.Empty));
+                if (chunks[11].Contains("."))
+                {
+                    String[] p = chunks[11].Split('.');
+                    while(p[1].Length!=3)
+                    {
+                        p[1] += "0";
+                    }
+                    sm.elevation = Convert.ToDouble(p[0] + p[1]);
+                }
+                else sm.elevation = Convert.ToDouble(chunks[11].Replace(".", string.Empty));
                 stations.Add(sm);
                 line = sr.ReadLine();
 
@@ -122,7 +131,7 @@ namespace DataETL
         }
         public void getNOAAstationInfo()
         {
-            string[] files = Directory.GetFiles(@"D:\WORK\piloto\Climate\NOAA\data\");
+            string[] files = Directory.GetFiles(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\NOAA\data\");
             foreach (string file in files)
             {
                 if (file.Contains("stn"))
