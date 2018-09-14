@@ -96,3 +96,4 @@ C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\DataETL\Dat
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.csprojAssemblyReference.cache
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.csproj.CoreCompileInputs.cache
 D:\WORK\piloto\Climate\ClimateDataETL\DataETL\DataETL\obj\Debug\DataETL.csproj.CopyComplete
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\DataETL\DataETL\bin\Debug\ColorMine.dll

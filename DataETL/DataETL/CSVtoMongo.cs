@@ -34,6 +34,31 @@ namespace DataETL
                 }
             }
         }
+        public DateTime stringToDT(string datetime)
+        {
+            DateTime dt = new DateTime();
+                string[] prts = datetime.Split(' ');
+                string[] monthdayyear = prts[0].Split('/');// day month year
+                string[] hoursminssecs = prts[1].Split(':');//hours mins secs
+                string ampm = prts[2];
+                int hour = Convert.ToInt32(hoursminssecs[0]);
+            if (ampm == "PM" && hour < 12)
+            {
+                hour += 12;
+            }
+                if (hoursminssecs.Length == 3)
+                {
+                    dt = new DateTime(Convert.ToInt32(monthdayyear[2]), Convert.ToInt32(monthdayyear[0]), Convert.ToInt32(monthdayyear[1]),
+                        hour, Convert.ToInt32(hoursminssecs[1]), Convert.ToInt32(hoursminssecs[2]));
+                }
+                else
+                {
+                    dt = new DateTime(Convert.ToInt32(monthdayyear[2]), Convert.ToInt32(monthdayyear[0]), Convert.ToInt32(monthdayyear[1]),
+                        hour, Convert.ToInt32(hoursminssecs[1]), 0);
+                }
+            
+            return dt;
+        }
         public void insertManyRecord(string collectionName, string file, char split)
         {
             var collection = db.GetCollection<RecordMongo>(collectionName);
@@ -43,15 +68,19 @@ namespace DataETL
             StreamReader read = new StreamReader(file);
             string line = read.ReadLine();
             string[] prts;
+            DateTime dt = new DateTime();
             while (line != null)
             {
 
                 prts = line.Split(split);
-                
+                if(!DateTime.TryParse(prts[1],out dt))
+                {
+                    var b = 0;
+                }
                 var dataToInsert = new RecordMongo
                 {
                     stationCode = Convert.ToInt32(prts[0]),
-                    time = Convert.ToDateTime(prts[1]),
+                    time = dt,
                     value = Convert.ToDouble(prts[2])
                 };
                 if (collectionName.Contains("NOAA"))
@@ -59,6 +88,7 @@ namespace DataETL
                     //noaa uses UTC so this subtracts 5 hours to bogota
                     dataToInsert.time = dataToInsert.time.ToLocalTime();
                 }
+                
                 else
                 {
                     if (collectionName.Contains("variable"))

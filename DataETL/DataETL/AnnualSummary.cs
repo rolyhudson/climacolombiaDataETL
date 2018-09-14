@@ -25,7 +25,7 @@ namespace DataETL
         }
         public void getRequiredVaribleMeta()
         {
-            StreamReader sr = new StreamReader(@"D:\WORK\piloto\Climate\VariablesMeta.csv");
+            StreamReader sr = new StreamReader(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\VariablesMeta.csv");
             string line = sr.ReadLine();
             string[] parts;
             VariableMeta meta;
@@ -89,6 +89,7 @@ namespace DataETL
                     if (vname == "PA") continue;
                     source = parts[2];
                     freq = Convert.ToInt32(parts[5]);
+                    
                     VariableMeta meta = getVariableMetaFromDB(vname, source,db);
                     RecordMeta rm = new RecordMeta(vname,freq);
                     addStation(stationcode);
@@ -126,6 +127,8 @@ namespace DataETL
         }
         public static VariableMeta getVariableMetaFromDB(string code,string source, IMongoDatabase db)
         {
+            if (source.Contains("IDEAM")) source = "IDEAM";
+            else source = "NOAA";
             IMongoCollection<VariableMeta> collection = db.GetCollection<VariableMeta>("metaVariables");
             var builder = Builders<VariableMeta>.Filter;
             var filter = builder.Eq("code", code) & builder.Eq("source", source);

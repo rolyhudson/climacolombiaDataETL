@@ -12,13 +12,10 @@ namespace DataETL
         List<StationRecord> stationMetaCollection = new List<StationRecord>();
         List<StationVariables> stationVariablesCollections = new List<StationVariables>();
 
-        string[] folders = {
-            @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\data\StationVariable\processed",
-            @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\data\StationVariableBogBuc\processed",
-            @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\NOAA\data\variables"
-        };
-        public Reader()
+        string[] folders;
+        public Reader(string[] f)
         {
+            folders = f;
             CSVtoMongo importData = new CSVtoMongo();
 
             importData.connect("mongodb://localhost", "climaColombia");

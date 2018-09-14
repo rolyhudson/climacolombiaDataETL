@@ -49,7 +49,7 @@ namespace DataETL
             //gets all the stations for which we have data
             getActiveStations();
             
-            //getStationsFromDB(db);
+            //getStationsFromDB(db);//this is the annula summary
             //gets the full list of meta data for all stations NOAA and IDEAM
             stations = getAllStationsFromDB(db);
         }
@@ -115,14 +115,14 @@ namespace DataETL
         public static List<StationSummary> getStationsFromDB(IMongoDatabase db)
         {
             //record of the stations for which we have data
-            var coll = db.GetCollection<StationSummary>("annualStationSummary_2018_7_3_14_6_5");
+            var coll = db.GetCollection<StationSummary>("annualStationSummary_2018_9_12_11_25_37");
             var stationsummarys = coll.Find(FilterDefinition<StationSummary>.Empty).ToList();
             return stationsummarys;
         }
         private void writeStationCoords()
         {
             StreamWriter sw = new StreamWriter("writeStationCoords.txt");
-            foreach(StationSummary ss in stationsummarys)
+            foreach(Station ss in stations)
             {
                 //get the ref station details
                 Station s = stations.Find(x => x.code == ss.code);

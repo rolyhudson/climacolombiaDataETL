@@ -1,0 +1,34 @@
+INFO: process launched
+INFO: preparing data
+INFO: BARRANQUILLA data prep completed
+INFO: VALLEDUPAR data prep completed
+INFO: CARTAGENA data prep completed
+INFO: SINCELEJO data prep completed
+INFO: ARMENIA data prep completed
+INFO: VILLAVICENCIO data prep completed
+INFO: MITU data prep completed
+INFO: MOCOA data prep completed
+INFO: INÍRIDA data prep completed
+INFO: CALI data prep completed
+INFO: BUCARAMANGA data prep completed
+INFO: QUIBDÓ data prep completed
+INFO: TUNJA data prep completed
+INFO: YOPAL data prep completed
+INFO: SANTA FE DE BOGOTÁ data prep completed
+INFO: IBAGUÉ data prep completed
+INFO: POPAYÁN data prep completed
+INFO: FLORENCIA data prep completed
+INFO: PUERTO CARREÑO data prep completed
+INFO: SANTA MARTA data prep completed
+INFO: MANIZALES data prep completed
+INFO: PEREIRA data prep completed
+INFO: NEIVA data prep completed
+INFO: SAN JOSÉ DEL GUAVIARE data prep completed
+INFO: PASTO data prep completed
+INFO: SAN ANDRES data prep completed
+INFO: ARAUCA data prep completed
+INFO: RIOHACHA data prep completed
+INFO: LETICIA data prep completed
+INFO: MEDELLÍN data prep completed
+INFO: MONTERÍA data prep completed
+INFO: CÚCUTA data prep completed

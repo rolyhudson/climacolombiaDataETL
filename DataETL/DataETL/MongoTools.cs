@@ -95,6 +95,21 @@ namespace DataETL
                 }
             }
         }
+        public static void cleanUpByKeyword(String key)
+        {
+            IMongoDatabase db = MongoTools.connect("mongodb://localhost", "climaColombia");
+            //clean up bog buc with PA variable
+            List<string> collNames = MongoTools.collectionNames(db);
+            foreach (string collection in collNames)
+            {
+                if (collection.Contains(key))
+                {
+                    var coll = db.GetCollection<BsonDocument>(collection);
+                    var t = coll.Find(new BsonDocument()).ToList();
+                    db.DropCollection(collection);
+                }
+            }
+        }
         public static void cleanUp()
         {
             IMongoDatabase db = MongoTools.connect("mongodb://localhost", "climaColombia");
@@ -102,7 +117,7 @@ namespace DataETL
             List<string> collNames = MongoTools.collectionNames(db);
             foreach (string collection in collNames)
             {
-                if (collection.Contains("average"))
+                if (collection.Contains("metaVariables"))
                 {
                     var coll = db.GetCollection<BsonDocument>(collection);
                     var t = coll.Find(new BsonDocument()).ToList();

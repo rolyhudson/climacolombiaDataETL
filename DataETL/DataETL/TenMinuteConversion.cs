@@ -22,11 +22,11 @@ namespace DataETL
         {
             db = MongoTools.connect("mongodb://localhost/?maxPoolSize=1000", "climaColombia");
         }
-        public void convert()
+        public void convert(string key)
         {
             //("mongodb://localhost/?maxPoolSize=555");
             db = MongoTools.connect("mongodb://localhost/?maxPoolSize=1000", "climaColombia");
-            Task t1 = Task.Run(() => convert10min());
+            Task t1 = Task.Run(() => convert10min(key));
 
             //add the processed data to mongo
             t1.Wait();
@@ -35,6 +35,7 @@ namespace DataETL
                 insertMany(cm.records, cm.name);
             }
         }
+        
         public void convertSingleCollection(string collection)
         {
             string[] parts = collection.Split('_');
@@ -54,7 +55,7 @@ namespace DataETL
             t1.Wait();
             insertMany(cm.records, cm.name);
         }
-        public void convert10min()
+        public void convert10min(string key)
         {
             List<string> collNames = MongoTools.collectionNames(db);
             string vname = "";
@@ -65,7 +66,7 @@ namespace DataETL
             foreach (string collection in collNames)
             {
                 //all station record collections start with an s_
-                if (collection[0] == 's'&&!collection.Contains("averaged"))
+                if (collection[0] == 's'&&collection.Contains(key))
                 {
                     convertSingleCollection(collection);
                     

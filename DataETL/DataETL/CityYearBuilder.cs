@@ -31,20 +31,20 @@ namespace DataETL
             foreach (StationGroup sg in allCityGroups)
             {
                 var city = sg.name;
-               
-                var collection = db.GetCollection<SyntheticYear>(city + "_meanHour");
-                List<SyntheticYear> synthYear = collection.Find(FilterDefinition<SyntheticYear>.Empty).ToList();
-                try
-                {
-                    synthYear[0].name += "_meanHour";
-                    synthYear[0].info = AnnualSummary.getStationFromMongo(21206960, db);
-                    EPWWriter epww = new EPWWriter(synthYear[0], @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate");
-                    this.addLineToLogFile("INFO: "+city+" written as EPW");
-                }
-                catch
-                {
-                    this.addLineToLogFile("WARN: " + city + " synth year could not be read from DB");
-                }
+                
+                    var collection = db.GetCollection<SyntheticYear>(city + "_medianHour");
+                    List<SyntheticYear> synthYear = collection.Find(FilterDefinition<SyntheticYear>.Empty).ToList();
+                    try
+                    {
+                        synthYear[0].name += "_medianHour";
+                        synthYear[0].info = AnnualSummary.getStationFromMongo(21206960, db);
+                        EPWWriter epww = new EPWWriter(synthYear[0], @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate");
+                        this.addLineToLogFile("INFO: " + city + " written as EPW");
+                    }
+                    catch
+                    {
+                        this.addLineToLogFile("WARN: " + city + " synth year could not be read from DB");
+                    }
                 
 
             }
@@ -60,8 +60,7 @@ namespace DataETL
             foreach (StationGroup sg in allCityGroups)
             {
                 var city = sg.name;
-                if (city != "SANTA FE DE BOGOTÁ" && city != "MEDELLÍN" && city != "CARTAGENA")
-                {
+                
                     try
                     {
                         var cityGroup = allCityGroups.Find(x => x.name == city);
@@ -75,7 +74,7 @@ namespace DataETL
                     {
                         this.addLineToLogFile("WARN: " + city + " data prep failed");
                     }
-                }            
+                          
             }
         }
         public async Task syntheticYearBatch(string method)
@@ -89,15 +88,15 @@ namespace DataETL
             foreach (StationGroup sg in allCityGroups)
             {
                 var city = sg.name;
-                if (city != "SANTA FE DE BOGOTÁ")
-                {
+               
                     List<IMongoCollection<RecordMongo>> stationData = new List<IMongoCollection<RecordMongo>>();
                     try
                     {
                         var cityGroup = allCityGroups.Find(x => x.name == city);
                         var stationCollNames = getStationsColNames(cityGroup);
                         await index60Minutes(stationCollNames);
-                        stationData = getTheStationData(stationCollNames);
+                        //ignore 10min collections
+                        stationData = getTheStationData(stationCollNames.FindAll(s=>s.Contains("60")));
                         this.addLineToLogFile("INFO: found ref data for " + city + " synth year");
                     }
                     catch
@@ -134,7 +133,7 @@ namespace DataETL
                     {
                         this.addLineToLogFile("WARN: " + city + " synth year was not stored in DB");
                     }
-                }
+                
             }
         }
         private void nightRadiation(ref CollectionMongo radvariables)
@@ -307,7 +306,10 @@ namespace DataETL
             string[] pieces;
             VariableMeta vm;
             int hourofsyntheticyear = 0;
-            
+            if(vcode=="RS")
+            {
+                var b = 0;
+            }
             DateTime local = new DateTime();
             DateTime universal = new DateTime();
             //find collections with current variable
@@ -343,7 +345,7 @@ namespace DataETL
                     int startYr = 0;
                     int endYr = 0;
                     getFirstLastYear(sd, ref startYr, ref endYr);
-                    if (startYr == 1) startYr = 2008;
+                    if (startYr == 1) startYr = 1980;
                     for (int y = startYr; y < endYr; y++)
                     {
 
@@ -794,7 +796,7 @@ namespace DataETL
                     }
                     foreach (int code in cityGroup.stationcodes)
                     {
-                        if (scode == code&&freq==60)
+                        if (scode == code)
                         {
                             stationCollections.Add(col);
                         }

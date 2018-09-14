@@ -7,3 +7,13 @@ D:\WORK\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\ob
 D:\WORK\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\obj\Debug\TransformFilesIDEAM.csproj.GenerateResource.Cache
 D:\WORK\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\obj\Debug\TransformFilesIDEAM.exe
 D:\WORK\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\obj\Debug\TransformFilesIDEAM.pdb
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\bin\Debug\TransformFilesIDEAM.exe.config
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\bin\Debug\TransformFilesIDEAM.exe
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\bin\Debug\TransformFilesIDEAM.pdb
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\obj\Debug\TransformFilesIDEAM.csprojAssemblyReference.cache
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\obj\Debug\TransformFilesIDEAM.Form1.resources
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\obj\Debug\TransformFilesIDEAM.Properties.Resources.resources
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\obj\Debug\TransformFilesIDEAM.csproj.GenerateResource.cache
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\obj\Debug\TransformFilesIDEAM.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\obj\Debug\TransformFilesIDEAM.exe
+C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ClimateDataETL\TransformFilesIDEAM\TransformFilesIDEAM\obj\Debug\TransformFilesIDEAM.pdb

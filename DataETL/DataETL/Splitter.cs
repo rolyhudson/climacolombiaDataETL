@@ -25,7 +25,19 @@ namespace DataETL
 
             List<string> collNames = MongoTools.collectionNames(db);
             await splitLoop(collNames);
-            MessageBox.Show("Finsihed");
+            
+        }
+        public async Task splitByKeyWord(string dbname,string keyword)
+        {
+            connect("mongodb://localhost", dbname);
+
+            List<string> collNames = MongoTools.collectionNames(db);
+            List<string> subset = new List<string>();
+            foreach (String c in collNames)
+            {
+                if (c.Contains(keyword)) subset.Add(c);
+            }
+            await splitLoop(subset);
         }
         private async Task splitLoop(List<string> collNames)
         {
@@ -50,6 +62,7 @@ namespace DataETL
                 var builder = Builders<BsonDocument>.Filter;
                 var filter = builder.Eq("stationCode", stationcode);
                 //find in the variable collection
+                
                 using (IAsyncCursor<BsonDocument> cursor = await variableCollection.FindAsync(filter, options))
                 {
 

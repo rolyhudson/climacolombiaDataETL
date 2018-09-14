@@ -48,6 +48,10 @@ namespace DataETL
             IndexStationVariableCollections isvc = new IndexStationVariableCollections();
          
         }
+        private void visualiseEpws(object sender, EventArgs e)
+        {
+            epwVisualiser.EpwImageMaker images = new epwVisualiser.EpwImageMaker(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\epw");
+        }
         private void syntheticYear(object sender, EventArgs e)
         {
             CityYearBuilder cyb = new CityYearBuilder();
@@ -64,7 +68,27 @@ namespace DataETL
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            Reader reader = new Reader();
+            //Reader reader = new Reader();
+        }
+        private void uploadTest(object sender, EventArgs e)
+        {
+            string[] folders = {
+            //@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\data\StationVariable\processed",
+            //@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\data\StationVariableBogBuc\processed",
+            //@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\NOAA\data\variables",
+            @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\data\Variable\processed",
+            //@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\data\Station_Radiation\processed",
+            //@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\NOAA\data\variables"
+            };
+            String key = "variable";
+            //MongoTools.cleanUpByKeyword(key);
+            //Reader reader = new Reader(folders);
+            Splitter split = new Splitter();
+            split.splitByKeyWord("climaColombia", key);
+
+            //TemporalAnalysis ta = new TemporalAnalysis();
+            //ta.dateTimeTest(key);
+
         }
         private void splitData(object sender, EventArgs e)
         {
@@ -138,8 +162,7 @@ namespace DataETL
         }
         private void convertTenMinuteCollections(object sender, EventArgs e)
         {
-            TenMinuteConversion tmc = new TenMinuteConversion();
-            tmc.convert();
+            
         }
         private void dropIndexes(object sender, EventArgs e)
         {

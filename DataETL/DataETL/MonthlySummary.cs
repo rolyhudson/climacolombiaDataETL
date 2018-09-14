@@ -37,7 +37,7 @@ namespace DataETL
             //get the collection with summary names
             IMongoCollection<BsonDocument> names = db.GetCollection<BsonDocument>("summaryCollectionNames");
             var name = names.Find(new BsonDocument()).ToList();
-            IMongoCollection<StationMonthly> collection = db.GetCollection<StationMonthly>("monthlyStationSummary_2018_7_8_14_15_27");
+            IMongoCollection<StationMonthly> collection = db.GetCollection<StationMonthly>("monthlyStationSummary_2018_9_12_11_44_50");
             
             var filter = FilterDefinition<StationMonthly>.Empty;
             var vms = collection.FindSync(filter).ToList();
@@ -285,7 +285,7 @@ namespace DataETL
             
             foreach (StationGroup sg in stationgroups)
             {
-                //if (sg.name == "SANTA FE DE BOGOTÁ")
+                //if (sg.name == "QUIBDÓ")
                 //{
                     List<StationMonthly> group = new List<StationMonthly>();
                     foreach (int scode in sg.stationcodes)
@@ -304,6 +304,7 @@ namespace DataETL
             var c = cities.Find(x => x.name == groupname);
             //find the first month and year of all monthlytotals
             //generate yaxis titles 
+
             int startYear = 0;
             int startMonth = 0;
             getGroupFirstMonth(group, ref startYear, ref startMonth);
@@ -312,8 +313,11 @@ namespace DataETL
             getGroupLastMonth(group, ref endYear, ref endMonth);
             DateTime startDate = new DateTime();
             if (startYear != 10000) startDate = new DateTime(startYear, startMonth, 1);
+            else startDate = new DateTime(1985, 1, 1);
             DateTime endDate = new DateTime();
             if (endYear != 0) endDate = new DateTime(endYear, endMonth, 1);
+            else startDate = new DateTime(2018, 8, 1);
+
             int monthsSpan = (int)Math.Round((endDate - startDate).Days / 30.0, 1);
             //set the master pane
             ZedGraphControl zgc = new ZedGraphControl();
@@ -406,7 +410,7 @@ namespace DataETL
             {
                 master.SetLayout(g, PaneLayout.SingleColumn);
             }
-            master.GetImage().Save(@"D:\WORK\piloto\Climate\groupMonthlyBarCharts\" + groupname + ".jpeg", System.Drawing.Imaging.ImageFormat.Jpeg);
+            master.GetImage().Save(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\groupMonthlyBarCharts\" + groupname + ".jpeg", System.Drawing.Imaging.ImageFormat.Jpeg);
 
 
         }
@@ -431,6 +435,8 @@ namespace DataETL
                     if (vname == "PA") continue;
                     source = parts[2];
                     freq = Convert.ToInt32(parts[5]);
+                    if (source.Contains("IDEAM")) source = "IDEAM";
+                    else source = "NOAA";
                     VariableMeta meta = AnnualSummary.getVariableMetaFromDB(vname, source,db);
                     VariableMonthly vm = new VariableMonthly(vname, freq);
                     addStation(stationcode);

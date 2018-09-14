@@ -20,23 +20,23 @@ namespace TransformFilesIDEAM
         }
         private void convertRadFiles(object sender, EventArgs e)
         {
-            ProcessText.convertFolderOfXLSX(@"D:\WORK\piloto\Climate\IDEAM\data\Station_Radiation");
+            ProcessText.convertFolderOfXLSX(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\data\Station_Radiation");
         }
         private void processRadiationFiles(object sender, EventArgs e)
         {
-            ProcessText process = new ProcessText(@"D:\WORK\piloto\Climate\IDEAM\data\Station_Radiation", "IDEAM", "radIDEAM");
+            ProcessText process = new ProcessText(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\data\Station_Radiation", "IDEAM", "radIDEAM");
         }
         private void processStation_VariableFiles(object sender, EventArgs e)
         {
-            ProcessText process = new ProcessText(@"D:\WORK\piloto\Climate\IDEAM\data\StationVariable", "IDEAM", "s_vIDEAM");
+            ProcessText process = new ProcessText(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\data\StationVariable", "IDEAM", "s_vIDEAM");
         }
         private void processBog_Buc(object sender, EventArgs e)
         {
-            ProcessText process = new ProcessText(@"D:\WORK\piloto\Climate\IDEAM\data\StationVariableBogBuc", "IDEAM", "bog_bucIDEAM");
+            ProcessText process = new ProcessText(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\data\StationVariableBogBuc", "IDEAM", "bog_bucIDEAM");
         }
         private void processVariable(object sender,EventArgs e)
         {
-            ProcessText process = new ProcessText(@"D:\WORK\piloto\Climate\IDEAM\data\Variable\needed", "IDEAM", "variableIDEAM");
+            ProcessText process = new ProcessText(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\data\Variable\needed", "IDEAM", "variableIDEAM");
         }
     }
 }

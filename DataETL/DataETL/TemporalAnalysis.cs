@@ -70,6 +70,29 @@ namespace DataETL
             }
             return vars;
         }
+        public void dateTimeTest(String source)
+        {
+            var names = MongoTools.collectionNames(db);
+            
+            int count = 0;
+            List<string> subset = new List<string>();
+            foreach (String c in names)
+            {
+                if(c[0]=='s')
+                {
+                    if (c.Contains(source)) subset.Add(c);
+                }
+                
+            }
+            var wcss = splitList(subset, 10);
+            foreach (List<string> wcs in wcss)
+            {
+
+                testDaysGraphic( wcs, source+"p_" + count);
+                count++;
+
+            }
+        }
         public void graphCityGroups()
         {
             stations = StationGrouping.getAllStationsFromDB(db);
@@ -224,6 +247,48 @@ namespace DataETL
             }
             master.GetImage().Save(@"D:\WORK\piloto\Climate\IDEAM\DailyAnalysisTS_RS\" + filename + ".jpeg", System.Drawing.Imaging.ImageFormat.Jpeg);
         }
+        private async Task testDaysGraphic( List<string> weatherCollections, string filename)
+        {
+            
+            //set the master pane
+            ZedGraphControl zgc = new ZedGraphControl();
+            MasterPane master = zgc.MasterPane;
+            master.Rect = new RectangleF(0, 0, 2000, 666 * weatherCollections.Count);
+            master.PaneList.Clear();
+            master.Title.FontSpec = new FontSpec("Arial", 7.0f, Color.Black, false, false, false);
+            master.Margin.All = 5;
+            master.Legend.IsVisible = false;
+            int stationcode = 0;
+            string vname = "";
+            string source = "";
+            int freq = 0;
+            foreach (string wc in weatherCollections)
+            {
+                ////create one scatter for each stationvariable
+                
+                    string[] parts = wc.Split('_');
+                    stationcode = Convert.ToInt32(parts[1]);
+                    vname = parts[4];
+                    source = parts[2];
+                    freq = Convert.ToInt32(parts[5]);
+
+                    VariableMeta meta = AnnualSummary.getVariableMetaFromDB(vname, source, db);
+                    PointPairList pointpair = new PointPairList();
+                    pointpair = await GenerateHourlyData(wc, meta);
+                    if (pointpair.Count > 0) AddChartToMaster(master, pointpair, wc, vname, meta, false);
+               
+            }
+            //save graphic
+            // Refigure the axis ranges for the GraphPanes
+            zgc.AxisChange();
+            // Layout the GraphPanes using a default Pane Layout
+            Bitmap b = new Bitmap(2000, 666 * weatherCollections.Count);
+            using (Graphics g = Graphics.FromImage(b))
+            {
+                master.SetLayout(g, PaneLayout.SingleColumn);
+            }
+            master.GetImage().Save(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\ImportAnalysis\" + filename + ".jpeg", System.Drawing.Imaging.ImageFormat.Jpeg);
+        }
         private async Task cityGroupGraphic(StationGroup cityGroup, List<string> weatherCollections, string filename)
         {
             List<City> cities = MapTools.readCities();
@@ -271,7 +336,7 @@ namespace DataETL
             {
                 master.SetLayout(g, PaneLayout.SingleColumn);
             }
-            master.GetImage().Save(@"D:\WORK\piloto\Climate\IDEAM\DailyAnalysis\" + filename + ".jpeg", System.Drawing.Imaging.ImageFormat.Jpeg);
+            master.GetImage().Save(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\DailyAnalysis\" + filename + ".jpeg", System.Drawing.Imaging.ImageFormat.Jpeg);
         }
         public void testAggreate(string collname)
         {
@@ -367,7 +432,8 @@ namespace DataETL
             pane.XAxis.Title.Text = "hour";
             pane.YAxis.Title.Text = yaxistitle;
             pane.Border.IsVisible = false;
-            pane.XAxis.Scale.Max = 24;
+            pane.XAxis.Scale.Max = 23;
+            pane.XAxis.Scale.Min = 0;
             pane.XAxis.Scale.MajorStep = 4.0;
             pane.XAxis.Scale.MinorStep = 1.0;
             pane.YAxis.Scale.Min = meta.min;

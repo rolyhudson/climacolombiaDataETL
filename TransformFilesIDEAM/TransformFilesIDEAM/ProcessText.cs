@@ -69,7 +69,7 @@ namespace TransformFilesIDEAM
         private void processVariable()
         {
             string[] files = Directory.GetFiles(folder);
-            CultureInfo esCol = new CultureInfo("de-DE");
+            
             foreach (string file in files)
             {
                 if (Path.GetExtension(file) == ".csv")
@@ -97,11 +97,14 @@ namespace TransformFilesIDEAM
                         
                         DateTime dt = new DateTime();
 
-                        if (DateTime.TryParse(parts[2], esCol, DateTimeStyles.None, out dt))
+                        if (DateTime.TryParse(parts[2], out dt))
                         {
                             r.datetime = dt;
                         }
-
+                        else
+                        {
+                            r.datetime = dt;
+                        }
                         r.stationCode = Convert.ToInt32(parts[0]);
                         double val;
                         if (parts.Length > 2)
@@ -121,7 +124,7 @@ namespace TransformFilesIDEAM
         private void processBogBuc()
         {
             string[] files = Directory.GetFiles(folder);
-            CultureInfo esCol = new CultureInfo("de-DE");
+            
             foreach (string file in files)
             {
                 
@@ -183,11 +186,14 @@ namespace TransformFilesIDEAM
                         string[] timecode = parts[1].Split(' ');
                         DateTime dt = new DateTime();
 
-                        if (DateTime.TryParse(parts[0] + " " + timecode[0], esCol, DateTimeStyles.None, out dt))
+                        if (DateTime.TryParse(parts[0] + " " + timecode[0], out dt))
                         {
                             r.datetime = dt;
                         }
-
+                        else
+                        {
+                            r.datetime = dt;
+                        }
                         r.stationCode = sCode;
                         double val;
                         if (parts.Length > 2)
@@ -210,7 +216,7 @@ namespace TransformFilesIDEAM
         private void processStationVariable()
         {
             string[] files = Directory.GetFiles(folder);
-            CultureInfo esCol = new CultureInfo("de-DE");
+            
             foreach (string file in files)
             {
                 if (Path.GetExtension(file) == ".txt")
@@ -245,11 +251,14 @@ namespace TransformFilesIDEAM
                         string[] timecode = parts[1].Split(' ');
                         DateTime dt = new DateTime();
                         
-                        if (DateTime.TryParse(parts[0] + " " + timecode[0], esCol, DateTimeStyles.None, out dt))
+                        if (DateTime.TryParse(parts[0] + " " + timecode[0], out dt))
                         {
                             r.datetime = dt;
                         }
-                        
+                        else
+                        {
+                            r.datetime = dt;
+                        }
                         r.stationCode = sCode;
                         double val;
                         if (parts.Length > 2)
@@ -294,14 +303,40 @@ namespace TransformFilesIDEAM
                     StreamReader sr = new StreamReader(file);
                     string line = sr.ReadLine();
                     line = sr.ReadLine();
+                    DateTime dt = new DateTime();
                     while (line!=null)
                     {
                         Record r = new Record();
                         string[] parts = line.Split(',');
-                        if(parts[1]!="")r.datetime = Convert.ToDateTime(parts[1]);
-                        if (parts[2] != "") r.value = Convert.ToDouble(parts[2].Replace(',','.'));
-                        r.stationCode = sCode;
-                        rad.records.Add(r);
+                        //date format given is MM/DD/YYYY HH:MM
+                        if (parts[0] != "")
+                        {
+                            string[] datetime = parts[1].Split(' ');
+                            int hour = 0;
+                            int minutes = 0;
+                            string[] monthdayyear = datetime[0].Split('/');// day month year
+                            if (datetime.Length != 1)
+                            {
+                                string[] hoursminssecs = datetime[1].Split(':');//hours mins secs
+                                hour = Convert.ToInt32(hoursminssecs[0]);
+                                minutes = Convert.ToInt32(hoursminssecs[1]);
+                            }
+
+
+                            try
+                            {
+                                dt = new DateTime(Convert.ToInt32(monthdayyear[2]), Convert.ToInt32(monthdayyear[0]), Convert.ToInt32(monthdayyear[1])
+                                    , hour, minutes, 0);
+                            }
+                            catch
+                            {
+                                var b = 0;
+                            }
+                            r.datetime = dt;
+                            if (parts[2] != "") r.value = Convert.ToDouble(parts[2].Replace(',', '.'));
+                            r.stationCode = sCode;
+                            rad.records.Add(r);
+                        }
                         line = sr.ReadLine();
                     }
                     sr.Close();
