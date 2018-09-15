@@ -89,13 +89,17 @@ namespace epwVisualiser
         }
         private List<EpwData> getAnnualValues(String filename)
         {
-            EpwData rs = new EpwData();rs.setName("RS");
+            EpwData ghr = new EpwData();ghr.setName("GlobalHR");
+            EpwData diffhr = new EpwData(); diffhr.setName("DiffHR");
+            EpwData directhr = new EpwData(); directhr.setName("DirectHR");
             EpwData hr = new EpwData(); hr.setName("HR");
             EpwData nub = new EpwData();nub.setName("NUB");
             EpwData pr = new EpwData();pr.setName("PR");
             EpwData t = new EpwData();t.setName("TS");
             EpwData dv = new EpwData();dv.setName("DV");
             EpwData vv = new EpwData();vv.setName("VV");
+            EpwData dpt = new EpwData(); dpt.setName("DPT");
+            EpwData ehr = new EpwData(); ehr.setName("ExtraTerrHR");
 
             StreamReader sr = new StreamReader(filename);
             String line = sr.ReadLine();
@@ -113,11 +117,23 @@ namespace epwVisualiser
 
                                 t.values.Add(Convert.ToDouble(fields[i]));
                                 break;
+                            case 7:
+                                dpt.values.Add(Convert.ToDouble(fields[i]));
+                                break;
                             case 8:
                                 hr.values.Add(Convert.ToDouble(fields[i]));
                                 break;
+                            case 10:
+                                ehr.values.Add(Convert.ToDouble(fields[i]));
+                                break;
+                            case 13:
+                                ghr.values.Add(Convert.ToDouble(fields[i]));
+                                break;
                             case 14:
-                                rs.values.Add(Convert.ToDouble(fields[i]));
+                                directhr.values.Add(Convert.ToDouble(fields[i]));
+                                break;
+                            case 15:
+                                diffhr.values.Add(Convert.ToDouble(fields[i]));
                                 break;
                             case 20:
                                 dv.values.Add(Convert.ToDouble(fields[i]));
@@ -140,7 +156,11 @@ namespace epwVisualiser
             sr.Close();
             List<EpwData> fieldvalues = new List<EpwData>();
             fieldvalues.Add(t);
-            fieldvalues.Add(rs);
+            fieldvalues.Add(dpt);
+            fieldvalues.Add(ehr);
+            fieldvalues.Add(ghr);
+            fieldvalues.Add(directhr);
+            fieldvalues.Add(diffhr);
             fieldvalues.Add(hr);
             fieldvalues.Add(dv);
             fieldvalues.Add(vv);
@@ -150,26 +170,32 @@ namespace epwVisualiser
         }
         private void makeImage(List<EpwData> fieldvalues,string filename)
         {
-            int width = 6510;
-            int height = 340;
+            int widthPerChart = 930;
+            int heightPerChart = 340;
+            int cols = 2;
+            int rows = (int)Math.Ceiling(fieldvalues.Count / 2.0);
+            int width = cols*widthPerChart;
+            int height = rows* heightPerChart;
             Bitmap bitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             Graphics g = Graphics.FromImage(bitmap);
             // white back ground
             g.Clear(Color.White);
+            int colNum = 0;
+            int rowNum = 0;
             for( int v=0;v< fieldvalues.Count; v++)
             {
                 EpwData data = fieldvalues[v];
                 int d = 0;
                 int h = 0;
-                int startX = v * 930 + 50;
-                int startY = height - 50;
+                int startX = colNum * 930 + 50;
+                int startY = (rowNum+1)*heightPerChart - 50;
                 Font tFont = new Font("Arial", 20);
                 SolidBrush sBrush = new SolidBrush(System.Drawing.Color.Black);
                 //image title
                 if(v==0) g.DrawString(filename.Substring(filename.LastIndexOf("\\")), tFont, sBrush, startX, startY + 25);
                 //graph title
                 tFont = new Font("Arial", 16);
-                g.DrawString(data.name, tFont, sBrush,  startX, 25);
+                g.DrawString(data.name, tFont, sBrush,  startX, ((rowNum) * heightPerChart)+25);
                 float x = 0;
                 float y = 0;
                 Color c = new Color();
@@ -180,8 +206,12 @@ namespace epwVisualiser
                     if (data.values[i] >= data.nullValue) c = Color.Black;
                     else
                     {
-                        if (data.name == "DV") c = this.defineColorRadial(data.values[i], data.min, data.max);
-                        else c = this.rainbowRGB(data.values[i], data.min, data.max);
+                        if (Double.IsNaN(data.values[i])) c = Color.Black;
+                        else
+                        {
+                            if (data.name == "DV") c = this.defineColorRadial(data.values[i], data.min, data.max);
+                            else c = this.rainbowRGB(data.values[i], data.min, data.max);
+                        }
                     }
                         
                     SolidBrush p = new SolidBrush(c);
@@ -204,9 +234,15 @@ namespace epwVisualiser
                     if (data.name == "DV") c = this.defineColorRadial(val, data.min, data.max);
                     else c = this.rainbowRGB(val, data.min, data.max);
                     SolidBrush p = new SolidBrush(c);
-                    g.FillRectangle(p, x+30, height-60-(s*22), 20, 22);
+                    g.FillRectangle(p, x+30, ((rowNum + 1) * heightPerChart)- 60-(s*22), 20, 22);
 
-                    g.DrawString(Math.Round(val,1).ToString(), tFont, sBrush, x + 60, height - 60 - (s * 22));
+                    g.DrawString(Math.Round(val,1).ToString(), tFont, sBrush, x + 60, ((rowNum + 1) * heightPerChart) - 60 - (s * 22));
+                }
+                colNum++;
+                if(colNum==2)
+                {
+                    colNum = 0;
+                    rowNum++;
                 }
             }
             String fname = filename.Substring(0, filename.LastIndexOf("."));
@@ -220,6 +256,17 @@ namespace epwVisualiser
         public double max;
         public double min;
         public double nullValue;
+        //EpwData ghr = new EpwData(); ghr.setName("GHR");
+        //    EpwData diffhr = new EpwData(); ghr.setName("DiffHR");
+        //    EpwData directhr = new EpwData(); ghr.setName("DirectHR");
+        //    EpwData hr = new EpwData(); hr.setName("HR");
+        //    EpwData nub = new EpwData(); nub.setName("NUB");
+        //    EpwData pr = new EpwData(); pr.setName("PR");
+        //    EpwData t = new EpwData(); t.setName("TS");
+        //    EpwData dv = new EpwData(); dv.setName("DV");
+        //    EpwData vv = new EpwData(); vv.setName("VV");
+        //    EpwData dpt = new EpwData(); dpt.setName("DPT");
+        //    EpwData ehr = new EpwData(); ehr.setName("EHR");
         public void setName(String n)
         {
             this.name = n;
@@ -230,7 +277,27 @@ namespace epwVisualiser
                     this.min = -5;
                     this.nullValue = 99.9;
                     break;
-                case "RS":
+                case "DPT":
+                    this.max = 40;
+                    this.min = -5;
+                    this.nullValue = 99.9;
+                    break;
+                case "ExtraTerrHR":
+                    this.max = 1500;
+                    this.min = 0;
+                    this.nullValue = 9999;
+                    break;
+                case "DiffHR":
+                    this.max = 1000;
+                    this.min = 0;
+                    this.nullValue = 9999;
+                    break;
+                case "DirectHR":
+                    this.max = 1000;
+                    this.min = 0;
+                    this.nullValue = 9999;
+                    break;
+                case "GlobalHR":
                     this.max = 1000;
                     this.min = 0;
                     this.nullValue = 9999;

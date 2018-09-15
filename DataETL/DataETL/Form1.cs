@@ -73,14 +73,16 @@ namespace DataETL
         private void uploadTest(object sender, EventArgs e)
         {
             string[] folders = {
+                //reload
             //@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\data\StationVariable\processed",
             //@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\data\StationVariableBogBuc\processed",
-            //@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\NOAA\data\variables",
-            @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\data\Variable\processed",
+            @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\NOAA\data\variables",
+                //tohere to check split completion
+            ///@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\data\Variable\processed",
             //@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\data\Station_Radiation\processed",
-            //@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\NOAA\data\variables"
+            
             };
-            String key = "variable";
+            String key = "noaa";
             //MongoTools.cleanUpByKeyword(key);
             //Reader reader = new Reader(folders);
             Splitter split = new Splitter();

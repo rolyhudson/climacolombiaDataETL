@@ -218,6 +218,49 @@ namespace DataETL
             }
             
         }
+        private double calcDewPoint(DateTime currentHr)
+        {
+            //http://andrew.rsmas.miami.edu/bmcnoldy/Humidity.html
+            //TD: = 243.04 * (LN(RH / 100) + ((17.625 * T) / (243.04 + T))) / (17.625 - LN(RH / 100) - ((17.625 * T) / (243.04 + T)))
+            double t =Convert.ToDouble( getValue("TS", currentHr));
+            double rh = Convert.ToDouble(getValue("HR", currentHr));
+            double dpt = 0.0;
+            if (t==99.9||rh==999)
+            {
+                dpt = 99.9;
+            }
+            else dpt = 243.04 * (Math.Log(rh / 100) + ((17.625 * t) / (243.04 + t))) / (17.625 - Math.Log(rh / 100) - ((17.625 * t) / (243.04 + t)));
+            return Math.Round(dpt,2);
+        }
+        private double directRadiation(DateTime currentHr)
+        {
+            double diffuse = diffuseRadiation(currentHr);
+            double global = Convert.ToDouble(getValue("RS", currentHr));
+            double direct = 0.0;
+            if (global == 9999||diffuse==9999) direct = 9999;
+            else direct = SolarRadiation.getDirect(global, diffuse);
+            return Math.Round(direct, 2);
+        }
+        private double diffuseRadiation(DateTime currentHr)
+        {
+            double lat = this.synthYear.info.latitude;
+            double lon = this.synthYear.info.longitude;
+            int doy = currentHr.DayOfYear;
+            double global = Convert.ToDouble(getValue("RS", currentHr));
+            double diffRad = 0.0;
+            if (global == 9999) diffRad = 9999;
+            else diffRad = SolarRadiation.getDiffuse(global, doy, lat, lon, currentHr.ToLocalTime().Hour);
+            
+            return Math.Round(diffRad,2);
+        }
+        private double extraterrestrialHorizRad(DateTime currentHr)
+        {
+            double lat = this.synthYear.info.latitude;
+            double lon = this.synthYear.info.longitude;
+            int doy = currentHr.DayOfYear;
+            double etHrad = SolarRadiation.etRadHourly(doy, lat, lon, currentHr.ToLocalTime().Hour);
+            return Math.Round(etHrad, 2);
+        }
         private void epwHourlyData()
         {
             int year = 0;
@@ -251,15 +294,15 @@ namespace DataETL
                                  //\note values or the last "good" value is substituted.
 
                 line.Append(getValue("TS", currentHr) + ","); //N6, \field Dry Bulb Temperature\units C\minimum > -70\maximum < 70\missing 99.9
-                line.Append("99.9,"); //N7, \field Dew Point Temperature\units C\minimum > -70\maximum < 70\missing 99.9
+                line.Append(calcDewPoint(currentHr).ToString() + ","); //N7, \field Dew Point Temperature\units C\minimum > -70\maximum < 70\missing 99.9
                 line.Append(getValue("HR", currentHr) + ","); // N8, \field Relative Humidity\missing 999.\minimum 0\maximum 110
                 line.Append(pressure.ToString() + ",");// N9, \field Atmospheric Station Pressure\units Pa\missing 999999.\minimum > 31000\maximum < 120000
-                line.Append("9999.,");//N10, \field Extraterrestrial Horizontal Radiation\units Wh / m2\missing 9999.\minimum 0
+                line.Append(extraterrestrialHorizRad(currentHr).ToString()+ ",");//N10, \field Extraterrestrial Horizontal Radiation\units Wh / m2\missing 9999.\minimum 0
                 line.Append("9999.,");//N11, \field Extraterrestrial Direct Normal Radiation\units Wh / m2\missing 9999.\minimum 0
                 line.Append("9999.,");//N12, \field Horizontal Infrared Radiation Intensity\units Wh / m2\missing 9999.\minimum 0
-                line.Append("9999.,");//N13, \field Global Horizontal Radiation \units Wh / m2\missing 9999.\minimum 0
-                line.Append(getValue("RS", currentHr) + ",");//N14, \field Direct Normal Radiation \units Wh / m2\missing 9999.\minimum 0
-                line.Append("9999.,");//N15, \field Diffuse Horizontal Radiation\units Wh / m2\missing 9999.\minimum 0
+                line.Append(getValue("RS", currentHr) + ",");//N13, \field Global Horizontal Radiation \units Wh / m2\missing 9999.\minimum 0
+                line.Append(directRadiation(currentHr).ToString() + ",");//N14, \field Direct Normal Radiation \units Wh / m2\missing 9999.\minimum 0
+                line.Append(diffuseRadiation( currentHr).ToString() + ",");//N15, \field Diffuse Horizontal Radiation\units Wh / m2\missing 9999.\minimum 0
                 line.Append("999999.,");//N16, \field Global Horizontal Illuminance\units lux\missing 999999.\note will be missing if > = 999900\minimum 0
                 line.Append("999999.,");//N17, \field Direct Normal Illuminance\units lux\missing 999999.\note will be missing if > = 999900\minimum 0
                 line.Append("999999.,");//N18, \field Diffuse Horizontal Illuminance\units lux\missing 999999.\note will be missing if > = 999900\minimum 0

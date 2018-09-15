@@ -1,3 +1,0 @@
-INFO: process launched
-INFO: starting batch of synth years
-INFO: found ref data for BARRANQUILLA synth year

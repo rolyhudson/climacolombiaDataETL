@@ -37,7 +37,7 @@ namespace DataETL
             //get the collection with summary names
             IMongoCollection<BsonDocument> names = db.GetCollection<BsonDocument>("summaryCollectionNames");
             var name = names.Find(new BsonDocument()).ToList();
-            IMongoCollection<StationMonthly> collection = db.GetCollection<StationMonthly>("monthlyStationSummary_2018_9_12_11_44_50");
+            IMongoCollection<StationMonthly> collection = db.GetCollection<StationMonthly>("monthlyStationSummary_2018_9_14_7_15_28");
             
             var filter = FilterDefinition<StationMonthly>.Empty;
             var vms = collection.FindSync(filter).ToList();

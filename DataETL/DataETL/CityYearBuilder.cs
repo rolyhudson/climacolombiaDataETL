@@ -31,13 +31,21 @@ namespace DataETL
             foreach (StationGroup sg in allCityGroups)
             {
                 var city = sg.name;
-                
+                if (city != "CARTAGENA")
+                {
+                    List<City> cities = MapTools.readCities();
+                    City current = cities.Find(c => c.name == city);
                     var collection = db.GetCollection<SyntheticYear>(city + "_medianHour");
                     List<SyntheticYear> synthYear = collection.Find(FilterDefinition<SyntheticYear>.Empty).ToList();
                     try
                     {
                         synthYear[0].name += "_medianHour";
-                        synthYear[0].info = AnnualSummary.getStationFromMongo(21206960, db);
+                        synthYear[0].info = new Station();
+                        synthYear[0].info.latitude = current.location[1];
+                        synthYear[0].info.longitude = current.location[0];
+                        synthYear[0].info.elevation = current.elevation;
+                        synthYear[0].info.country = "COLOMBIA";
+                        synthYear[0].info.source = "clima-colombia synthetic year 2018";
                         EPWWriter epww = new EPWWriter(synthYear[0], @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate");
                         this.addLineToLogFile("INFO: " + city + " written as EPW");
                     }
@@ -45,7 +53,7 @@ namespace DataETL
                     {
                         this.addLineToLogFile("WARN: " + city + " synth year could not be read from DB");
                     }
-                
+                }
 
             }
             
@@ -88,7 +96,8 @@ namespace DataETL
             foreach (StationGroup sg in allCityGroups)
             {
                 var city = sg.name;
-               
+                if (city != "CARTAGENA")
+                {
                     List<IMongoCollection<RecordMongo>> stationData = new List<IMongoCollection<RecordMongo>>();
                     try
                     {
@@ -96,7 +105,7 @@ namespace DataETL
                         var stationCollNames = getStationsColNames(cityGroup);
                         await index60Minutes(stationCollNames);
                         //ignore 10min collections
-                        stationData = getTheStationData(stationCollNames.FindAll(s=>s.Contains("60")));
+                        stationData = getTheStationData(stationCollNames.FindAll(s => s.Contains("60")));
                         this.addLineToLogFile("INFO: found ref data for " + city + " synth year");
                     }
                     catch
@@ -133,7 +142,7 @@ namespace DataETL
                     {
                         this.addLineToLogFile("WARN: " + city + " synth year was not stored in DB");
                     }
-                
+                }
             }
         }
         private void nightRadiation(ref CollectionMongo radvariables)
@@ -306,10 +315,7 @@ namespace DataETL
             string[] pieces;
             VariableMeta vm;
             int hourofsyntheticyear = 0;
-            if(vcode=="RS")
-            {
-                var b = 0;
-            }
+
             DateTime local = new DateTime();
             DateTime universal = new DateTime();
             //find collections with current variable
@@ -339,13 +345,13 @@ namespace DataETL
                     pieces = sd.CollectionNamespace.CollectionName.Split('_');
                    
                     string source = pieces[2];
-                    if (source.Contains("NOAA")) source = "NOAA";
-                    else source = "IDEAM";
+                    
                     vm = AnnualSummary.getVariableMetaFromDB(vcode, source, db);
                     int startYr = 0;
                     int endYr = 0;
                     getFirstLastYear(sd, ref startYr, ref endYr);
                     if (startYr == 1) startYr = 1980;
+                    if(endYr ==1) startYr = 2018;
                     for (int y = startYr; y < endYr; y++)
                     {
 
@@ -873,7 +879,7 @@ namespace DataETL
         public string name { get; set; }
         public Station info { get; set; }
         public List<CollectionMongo> variables { get; set; }
-        private string[] vNames = new string[] { "NUB", "TS", "DV", "VV", "PR", "HR", "RS" };
+        private string[] vNames = new string[] { "NUB", "TS", "DV", "VV", "PR", "HR", "RS", };
         public SyntheticYear()
         {
             variables = new List<CollectionMongo>();
