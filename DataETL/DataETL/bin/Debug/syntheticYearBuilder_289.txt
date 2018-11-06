@@ -1,0 +1,8 @@
+INFO: process launched
+INFO: preparing data
+INFO: amazonia data prep completed
+INFO: outside data prep completed
+INFO: pacifico data prep completed
+WARN: caribe data prep failed
+INFO: orinoquia data prep completed
+WARN: andes data prep failed

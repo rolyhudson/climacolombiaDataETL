@@ -279,7 +279,8 @@ namespace DataETL
         public void groupMonthly()
         {
             //get groups from DB
-            var cityGroups = db.GetCollection<StationGroup>("cityGroups");
+            //var cityGroups = db.GetCollection<StationGroup>("cityGroups");
+            var cityGroups = db.GetCollection<StationGroup>("cityRegionGroups");
             List<StationGroup> stationgroups = cityGroups.Find(FilterDefinition<StationGroup>.Empty).ToList();
             List<StationMonthly> stationsMonthly = getMonthlySummaryFromDB();
             

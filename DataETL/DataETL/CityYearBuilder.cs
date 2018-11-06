@@ -59,10 +59,10 @@ namespace DataETL
             
         }
         
-        public async Task syntheticYearDataPrep()
+        public async Task syntheticYearDataPrep(string groups)
         {
             stations = StationGrouping.getAllStationsFromDB(db);
-            var coll = db.GetCollection<StationGroup>("cityGroups");
+            var coll = db.GetCollection<StationGroup>(groups);
             var allCityGroups = coll.Find(FilterDefinition<StationGroup>.Empty).ToList();
             this.addLineToLogFile("INFO: preparing data");
             foreach (StationGroup sg in allCityGroups)
@@ -73,7 +73,7 @@ namespace DataETL
                     {
                         var cityGroup = allCityGroups.Find(x => x.name == city);
                         var stationCollNames = getStationsColNames(cityGroup);
-                        await index60Minutes(stationCollNames);
+                        
                         averageTenMinute(ref stationCollNames);
                         await index60Minutes(stationCollNames);
                         this.addLineToLogFile("INFO: "+city+" data prep completed");
@@ -83,6 +83,66 @@ namespace DataETL
                         this.addLineToLogFile("WARN: " + city + " data prep failed");
                     }
                           
+            }
+        }
+        public async Task syntheticYearBatchFixer(string method)
+        {
+            CityYearFixer cyf = new CityYearFixer();
+            List<NeededData> neededData = cyf.readRequiredData();
+            stations = StationGrouping.getAllStationsFromDB(db);
+            var coll = db.GetCollection<StationGroup>("cityRegionGroups");
+            var allCityGroups = coll.Find(FilterDefinition<StationGroup>.Empty).ToList();
+            this.addLineToLogFile("INFO: starting batch of synth years");
+            foreach (StationGroup sg in allCityGroups)
+            {
+                var city = sg.name;
+                NeededData cityNeeds = neededData.Find(nd => nd.name == city);
+                List<IMongoCollection<RecordMongo>> stationData = new List<IMongoCollection<RecordMongo>>();
+                try
+                {
+                    var cityGroup = allCityGroups.Find(x => x.name == city);
+                    var stationCollNames = getStationsColNames(cityGroup);
+                    
+                    //ignore 10min collections
+                    stationData = getTheStationData(stationCollNames.FindAll(s => s.Contains("60")));
+                    this.addLineToLogFile("INFO: found ref data for " + city + " synth year");
+                }
+                catch
+                {
+                    this.addLineToLogFile("WARN: no ref data found for " + city + " synth year");
+                }
+                //read the synthyear for this city
+                var collection = db.GetCollection<SyntheticYear>(city + "_medianHour");
+                List<SyntheticYear> synthYear = collection.Find(FilterDefinition<SyntheticYear>.Empty).ToList();
+                SyntheticYear sy = synthYear[0];
+                try
+                {
+                    await getDaysForSelectedVariables(sy, stationData, method, cityNeeds.reqVariables);
+                    this.addLineToLogFile("INFO: calculated data for " + city + " synth year");
+                }
+                catch
+                {
+                    this.addLineToLogFile("WARN: error in calculating values for " + city + " synth year");
+                }
+
+                try
+                {
+                    holeFiller(holeFinder(ref sy), ref sy);
+                    this.addLineToLogFile("INFO: hole filling succeeded for " + city + " synth year");
+                }
+                catch
+                {
+                    this.addLineToLogFile("WARN: hole filling failed for " + city + " synth year");
+                }
+                try
+                {
+                    insertSytheticYear(city + "_" + method + "regionFix", sy);
+                    this.addLineToLogFile("INFO: " + city + " synth year was stored in DB");
+                }
+                catch
+                {
+                    this.addLineToLogFile("WARN: " + city + " synth year was not stored in DB");
+                }
             }
         }
         public async Task syntheticYearBatch(string method)
@@ -267,7 +327,33 @@ namespace DataETL
             }
             
         }
-        
+        private async Task getDaysForSelectedVariables(SyntheticYear synthYear, List<IMongoCollection<RecordMongo>> stationData, string method,List<string> fields)
+        {
+            if (method == "cdfDay")
+            {
+                List<Task> tasks = new List<Task>();
+                foreach (string field in fields)
+                {
+                    tasks.Add(selectDayOfYearCDF(field, synthYear, stationData));
+
+                }
+                await Task.WhenAll(tasks);
+                
+                this.addLineToLogFile("INFO: got CDF daily values for " + synthYear.name + " synth year");
+            }
+            else
+            {
+                List<Task> tasks = new List<Task>();
+                foreach(string field in fields)
+                {
+                    tasks.Add(generateHour(field, synthYear, stationData, method));
+                    
+                }
+                await Task.WhenAll(tasks);
+                this.addLineToLogFile("INFO: calculated hourly values for " + synthYear.name + " synth year");
+            }
+
+        }
         public void insertSytheticYear(string collectionName,SyntheticYear synthYear)
         {
             var collection = db.GetCollection<SyntheticYear>(collectionName);

@@ -126,6 +126,7 @@
   <ItemGroup>
     <Compile Include="AnnualSummary.cs" />
     <Compile Include="CityYearBuilder.cs" />
+    <Compile Include="CityYearFixer.cs" />
     <Compile Include="CleanRecords.cs" />
     <Compile Include="CSVtoMongo.cs" />
     <Compile Include="epwImageMaker.cs" />

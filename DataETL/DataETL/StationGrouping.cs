@@ -29,6 +29,7 @@ namespace DataETL
             getData();
             if (allideam) makeGroupsALLIDEAM();
             else makeGroups();
+            writeStationGroupIDs();
             outputJSON();
             storeInMongo();
             writeStationCoords();
@@ -118,6 +119,23 @@ namespace DataETL
             var coll = db.GetCollection<StationSummary>("annualStationSummary_2018_9_12_11_25_37");
             var stationsummarys = coll.Find(FilterDefinition<StationSummary>.Empty).ToList();
             return stationsummarys;
+        }
+        private void writeStationGroupIDs()
+        {
+            StreamWriter sw = new StreamWriter("writeStationGroups.txt");
+            foreach (StationGroup sg in stationsByCity)
+            {
+                //get the ref station details
+                sw.Write(sg.name + ",");
+                foreach (int code in sg.stationcodes)
+                {
+                    sw.Write(code + ",");
+                }
+                sw.WriteLine("");
+
+
+            }
+            sw.Close();
         }
         private void writeStationCoords()
         {

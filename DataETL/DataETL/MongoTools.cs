@@ -117,11 +117,11 @@ namespace DataETL
             List<string> collNames = MongoTools.collectionNames(db);
             foreach (string collection in collNames)
             {
-                if (collection.Contains("metaVariables"))
+                if (collection.Contains("averaged"))
                 {
-                    var coll = db.GetCollection<BsonDocument>(collection);
-                    var t = coll.Find(new BsonDocument()).ToList();
-                    //db.DropCollection(collection);
+                    //var coll = db.GetCollection<BsonDocument>(collection);
+                    //var t = coll.Find(new BsonDocument()).ToList();
+                    db.DropCollection(collection);
                 }
             }
         }

@@ -57,6 +57,7 @@
             this.button22 = new System.Windows.Forms.Button();
             this.button23 = new System.Windows.Forms.Button();
             this.button15 = new System.Windows.Forms.Button();
+            this.button25 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -397,11 +398,23 @@
             this.button15.UseVisualStyleBackColor = true;
             this.button15.Click += new System.EventHandler(this.visualiseEpws);
             // 
+            // button25
+            // 
+            this.button25.Location = new System.Drawing.Point(493, 219);
+            this.button25.Margin = new System.Windows.Forms.Padding(2);
+            this.button25.Name = "button25";
+            this.button25.Size = new System.Drawing.Size(73, 51);
+            this.button25.TabIndex = 24;
+            this.button25.Text = "fix synthetic year";
+            this.button25.UseVisualStyleBackColor = true;
+            this.button25.Click += new System.EventHandler(this.fixSyntheticYear);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(605, 391);
+            this.Controls.Add(this.button25);
             this.Controls.Add(this.button15);
             this.Controls.Add(this.button23);
             this.Controls.Add(this.button22);
@@ -459,6 +472,7 @@
         private System.Windows.Forms.Button button23;
         private System.Windows.Forms.Button button24;
         private System.Windows.Forms.Button button15;
+        private System.Windows.Forms.Button button25;
     }
 }
 

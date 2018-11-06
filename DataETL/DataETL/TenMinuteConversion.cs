@@ -29,11 +29,11 @@ namespace DataETL
             Task t1 = Task.Run(() => convert10min(key));
 
             //add the processed data to mongo
-            t1.Wait();
-            foreach(CollectionMongo cm in newAveragedData)
-            {
-                insertMany(cm.records, cm.name);
-            }
+            //t1.Wait();
+            //foreach(CollectionMongo cm in newAveragedData)
+            //{
+            //    insertMany(cm.records, cm.name);
+            //}
         }
         
         public void convertSingleCollection(string collection)

@@ -55,11 +55,15 @@ namespace DataETL
         private void syntheticYear(object sender, EventArgs e)
         {
             CityYearBuilder cyb = new CityYearBuilder();
-            cyb.syntheticYearBatch("medianHour");
-            //cyb.syntheticYearDataPrep();
+            //cyb.syntheticYearBatch("medianHour");
+            //cyb.syntheticYearDataPrep("regionGroups");
             //cyb.syntheticYearBatch("meanHour");
             //cyb.syntheticYearBatch("randomHour");
             //cyb.syntheticYearBatch("cdfDay");
+        }
+        private void fixSyntheticYear(object sender, EventArgs e)
+        {
+            CityYearFixer cyf = new CityYearFixer();
         }
         private void readSyntheticYear(object sender, EventArgs e)
         {
