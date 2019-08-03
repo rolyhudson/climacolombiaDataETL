@@ -18,7 +18,7 @@ namespace epwVisualiser
         }
         private void genImageSummaries(object sender, EventArgs e)
         {
-            EpwImageMaker images = new EpwImageMaker(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\epw");
+            EpwImageMaker images = new EpwImageMaker(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\epw\rc_3");
         }
     }
 }

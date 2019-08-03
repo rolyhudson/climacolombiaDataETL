@@ -25,40 +25,63 @@ namespace DataETL
         public void readSythYearFromDB()
         {
             stations = StationGrouping.getAllStationsFromDB(db);
+            //for the regional fix use:
+            //var coll = db.GetCollection<StationGroup>("cityRegionGroups");
+            //for the city groups use:
             var coll = db.GetCollection<StationGroup>("cityGroups");
             var allCityGroups = coll.Find(FilterDefinition<StationGroup>.Empty).ToList();
-            this.addLineToLogFile("INFO: preparing to read syntheYearsFromDB");
+            this.addLineToLogFile("INFO: preparing to read synthYearsFromDB");
             foreach (StationGroup sg in allCityGroups)
             {
                 var city = sg.name;
-                if (city != "CARTAGENA")
+                //the good from the city groups
+                //city == "SANTA FE DE BOGOTÁ" || city == "BARRANQUILLA" || city == "CARTAGENA"||city == "LETICIA"
+                if (city == "LETICIA")
                 {
+
                     List<City> cities = MapTools.readCities();
                     City current = cities.Find(c => c.name == city);
-                    var collection = db.GetCollection<SyntheticYear>(city + "_medianHour");
-                    List<SyntheticYear> synthYear = collection.Find(FilterDefinition<SyntheticYear>.Empty).ToList();
-                    try
-                    {
-                        synthYear[0].name += "_medianHour";
-                        synthYear[0].info = new Station();
-                        synthYear[0].info.latitude = current.location[1];
-                        synthYear[0].info.longitude = current.location[0];
-                        synthYear[0].info.elevation = current.elevation;
-                        synthYear[0].info.country = "COLOMBIA";
-                        synthYear[0].info.source = "clima-colombia synthetic year 2018";
-                        EPWWriter epww = new EPWWriter(synthYear[0], @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate");
-                        this.addLineToLogFile("INFO: " + city + " written as EPW");
-                    }
-                    catch
-                    {
-                        this.addLineToLogFile("WARN: " + city + " synth year could not be read from DB");
-                    }
+                    writeEPW(current.name, current.location[1], current.location[0], current.elevation);
                 }
 
             }
             
         }
-        
+        public void writeEPW(string name,double lat,double lon,double ele)
+        {
+            var collection = db.GetCollection<SyntheticYear>(name + "_medianHour");
+            List<SyntheticYear> synthYear = collection.Find(FilterDefinition<SyntheticYear>.Empty).ToList();
+            try
+            {
+                synthYear[0].name += "_synthYear_rc2";
+                synthYear[0].info = new Station();
+                synthYear[0].info.latitude = lat;
+                synthYear[0].info.longitude = lon;
+                synthYear[0].info.elevation = ele;
+                synthYear[0].info.country = "COLOMBIA";
+                synthYear[0].info.source = "clima-colombia synthetic year 2018";
+                EPWWriter epww = new EPWWriter(synthYear[0], @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate");
+                this.addLineToLogFile("INFO: " + name + " written as EPW");
+            }
+            catch
+            {
+                this.addLineToLogFile("WARN: " + name + " synth year could not be read from DB");
+            }
+        }
+        public async Task prepOneGroup(StationGroup sg)
+        {
+            try
+            {
+                var stationCollNames = getStationsColNames(sg);
+                averageTenMinute(ref stationCollNames);
+                await index60Minutes(stationCollNames);
+                this.addLineToLogFile("INFO: " + sg.name + " data prep completed");
+            }
+            catch
+            {
+                this.addLineToLogFile("WARN: " + sg.name + " data prep failed");
+            }
+        }
         public async Task syntheticYearDataPrep(string groups)
         {
             stations = StationGrouping.getAllStationsFromDB(db);
@@ -93,56 +116,119 @@ namespace DataETL
             var coll = db.GetCollection<StationGroup>("cityRegionGroups");
             var allCityGroups = coll.Find(FilterDefinition<StationGroup>.Empty).ToList();
             this.addLineToLogFile("INFO: starting batch of synth years");
+            List<Task> tasks = new List<Task>();
             foreach (StationGroup sg in allCityGroups)
             {
                 var city = sg.name;
                 NeededData cityNeeds = neededData.Find(nd => nd.name == city);
-                List<IMongoCollection<RecordMongo>> stationData = new List<IMongoCollection<RecordMongo>>();
-                try
+                if (cityNeeds != null)
                 {
-                    var cityGroup = allCityGroups.Find(x => x.name == city);
-                    var stationCollNames = getStationsColNames(cityGroup);
+                    if (city != "MITU")
+                    {
+                        var cityGroup = allCityGroups.Find(x => x.name == city);
+                        var stationCollNames = getStationsColNames(cityGroup);
+                        tasks.Add(fixCity(city, method, cityNeeds, stationCollNames));
+                    }
                     
-                    //ignore 10min collections
-                    stationData = getTheStationData(stationCollNames.FindAll(s => s.Contains("60")));
-                    this.addLineToLogFile("INFO: found ref data for " + city + " synth year");
-                }
-                catch
-                {
-                    this.addLineToLogFile("WARN: no ref data found for " + city + " synth year");
-                }
-                //read the synthyear for this city
-                var collection = db.GetCollection<SyntheticYear>(city + "_medianHour");
-                List<SyntheticYear> synthYear = collection.Find(FilterDefinition<SyntheticYear>.Empty).ToList();
-                SyntheticYear sy = synthYear[0];
-                try
-                {
-                    await getDaysForSelectedVariables(sy, stationData, method, cityNeeds.reqVariables);
-                    this.addLineToLogFile("INFO: calculated data for " + city + " synth year");
-                }
-                catch
-                {
-                    this.addLineToLogFile("WARN: error in calculating values for " + city + " synth year");
-                }
 
-                try
-                {
-                    holeFiller(holeFinder(ref sy), ref sy);
-                    this.addLineToLogFile("INFO: hole filling succeeded for " + city + " synth year");
                 }
-                catch
-                {
-                    this.addLineToLogFile("WARN: hole filling failed for " + city + " synth year");
-                }
-                try
-                {
-                    insertSytheticYear(city + "_" + method + "regionFix", sy);
-                    this.addLineToLogFile("INFO: " + city + " synth year was stored in DB");
-                }
-                catch
-                {
-                    this.addLineToLogFile("WARN: " + city + " synth year was not stored in DB");
-                }
+                
+            }
+            await Task.WhenAll(tasks);
+        }
+        public async Task fixCity(string city,string method, NeededData cityNeeds, List<string> stationCollNames)
+        {
+            List<IMongoCollection<RecordMongo>> stationData = new List<IMongoCollection<RecordMongo>>();
+            try
+            {
+                //ignore 10min collections
+                stationData = getTheStationData(stationCollNames.FindAll(s => s.Contains("_60")));
+                this.addLineToLogFile("INFO: found ref data for " + city + " synth year");
+            }
+            catch
+            {
+                this.addLineToLogFile("WARN: no ref data found for " + city + " synth year");
+            }
+            //read the synthyear for this city
+            var collection = db.GetCollection<SyntheticYear>(city + "_medianHour");
+            List<SyntheticYear> synthYear = collection.Find(FilterDefinition<SyntheticYear>.Empty).ToList();
+            SyntheticYear sy = synthYear[0];
+            SyntheticYear.convertSyntheticYear(ref sy);
+            try
+            {
+                await getDaysForSelectedVariables(sy, stationData, method, cityNeeds.reqVariables);
+                this.addLineToLogFile("INFO: calculated data for " + city + " synth year");
+            }
+            catch
+            {
+                this.addLineToLogFile("WARN: error in calculating values for " + city + " synth year");
+            }
+
+            try
+            {
+                holeFiller(holeFinder(ref sy), ref sy);
+                this.addLineToLogFile("INFO: hole filling succeeded for " + city + " synth year");
+            }
+            catch
+            {
+                this.addLineToLogFile("WARN: hole filling failed for " + city + " synth year");
+            }
+            try
+            {
+                insertSytheticYear(city + "_" + method + "regionFix", sy);
+                this.addLineToLogFile("INFO: " + city + " synth year was stored in DB");
+            }
+            catch
+            {
+                this.addLineToLogFile("WARN: " + city + " synth year was not stored in DB");
+            }
+        }
+        public async Task makeSynthYear(StationGroup sg, string method)
+        {
+            
+            List<IMongoCollection<RecordMongo>> stationData = new List<IMongoCollection<RecordMongo>>();
+            try
+            {
+                
+                var stationCollNames = getStationsColNames(sg);
+                await index60Minutes(stationCollNames);
+                //ignore 10min collections
+                stationData = getTheStationData(stationCollNames.FindAll(s => s.Contains("60")));
+                this.addLineToLogFile("INFO: found ref data for " + sg.name + " synth year");
+            }
+            catch
+            {
+                this.addLineToLogFile("WARN: no ref data found for " + sg.name + " synth year");
+            }
+            SyntheticYear synthYear = new SyntheticYear();
+            synthYear.name = sg.name;
+            try
+            {
+                await getDaysForVariables(synthYear, stationData, method);
+                this.addLineToLogFile("INFO: calculated data for " + sg.name + " synth year");
+            }
+            catch
+            {
+                this.addLineToLogFile("WARN: error in calculating values for " + sg.name + " synth year");
+            }
+
+            try
+            {
+                holeFiller(holeFinder(ref synthYear), ref synthYear);
+                this.addLineToLogFile("INFO: hole filling succeeded for " + sg.name + " synth year");
+            }
+            catch
+            {
+                this.addLineToLogFile("WARN: hole filling failed for " + sg.name + " synth year");
+            }
+            try
+            {
+                insertSytheticYear(sg.name + "_" + method, synthYear);
+                this.addLineToLogFile("INFO: " + sg.name + " synth year was stored in DB");
+            }
+            catch
+            {
+                this.addLineToLogFile("WARN: " + sg.name + " synth year was not stored in DB");
             }
         }
         public async Task syntheticYearBatch(string method)
@@ -155,54 +241,7 @@ namespace DataETL
             
             foreach (StationGroup sg in allCityGroups)
             {
-                var city = sg.name;
-                if (city != "CARTAGENA")
-                {
-                    List<IMongoCollection<RecordMongo>> stationData = new List<IMongoCollection<RecordMongo>>();
-                    try
-                    {
-                        var cityGroup = allCityGroups.Find(x => x.name == city);
-                        var stationCollNames = getStationsColNames(cityGroup);
-                        await index60Minutes(stationCollNames);
-                        //ignore 10min collections
-                        stationData = getTheStationData(stationCollNames.FindAll(s => s.Contains("60")));
-                        this.addLineToLogFile("INFO: found ref data for " + city + " synth year");
-                    }
-                    catch
-                    {
-                        this.addLineToLogFile("WARN: no ref data found for " + city + " synth year");
-                    }
-                    SyntheticYear synthYear = new SyntheticYear();
-                    synthYear.name = city;
-                    try
-                    {
-                        await getDaysForVariables(synthYear, stationData, method);
-                        this.addLineToLogFile("INFO: calculated data for " + city + " synth year");
-                    }
-                    catch
-                    {
-                        this.addLineToLogFile("WARN: error in calculating values for " + city + " synth year");
-                    }
-
-                    try
-                    {
-                        holeFiller(holeFinder(ref synthYear), ref synthYear);
-                        this.addLineToLogFile("INFO: hole filling succeeded for " + city + " synth year");
-                    }
-                    catch
-                    {
-                        this.addLineToLogFile("WARN: hole filling failed for " + city + " synth year");
-                    }
-                    try
-                    {
-                        insertSytheticYear(city + "_" + method, synthYear);
-                        this.addLineToLogFile("INFO: " + city + " synth year was stored in DB");
-                    }
-                    catch
-                    {
-                        this.addLineToLogFile("WARN: " + city + " synth year was not stored in DB");
-                    }
-                }
+                await makeSynthYear(sg, method);
             }
         }
         private void nightRadiation(ref CollectionMongo radvariables)
@@ -343,14 +382,14 @@ namespace DataETL
             }
             else
             {
-                List<Task> tasks = new List<Task>();
+                //List<Task> tasks = new List<Task>();
                 foreach(string field in fields)
                 {
-                    tasks.Add(generateHour(field, synthYear, stationData, method));
+                    await generateHour(field, synthYear, stationData, method);
                     
                 }
-                await Task.WhenAll(tasks);
-                this.addLineToLogFile("INFO: calculated hourly values for " + synthYear.name + " synth year");
+                //await Task.WhenAll(tasks);
+                this.addLineToLogFile("INFO: calculating hourly values for " + synthYear.name + " synth year");
             }
 
         }
@@ -970,6 +1009,18 @@ namespace DataETL
         {
             variables = new List<CollectionMongo>();
             foreach (string vname in vNames) variables.Add(generateVariableYear(vname));
+        }
+        public static void convertSyntheticYear(ref SyntheticYear yearToCopy)
+        {
+            //input synth year is in UTC time
+            foreach(CollectionMongo vcoll in yearToCopy.variables)
+            {
+                
+                foreach(RecordMongo r in vcoll.records)
+                {
+                    r.time = r.time.ToLocalTime();
+                }
+            }
         }
         private CollectionMongo generateVariableYear(string name)
         {

@@ -1,0 +1,29 @@
+INFO: process launched
+INFO: preparing to read synthYearsFromDB
+WARN: RIOHACHA synth year could not be read from DB
+INFO: PUERTO CARREÑO written as EPW
+INFO: CÚCUTA written as EPW
+INFO: BUCARAMANGA written as EPW
+INFO: ARMENIA written as EPW
+INFO: VILLAVICENCIO written as EPW
+INFO: PEREIRA written as EPW
+INFO: IBAGUÉ written as EPW
+INFO: NEIVA written as EPW
+INFO: SAN JOSÉ DEL GUAVIARE written as EPW
+INFO: SINCELEJO written as EPW
+INFO: MONTERÍA written as EPW
+INFO: INÍRIDA written as EPW
+INFO: CALI written as EPW
+INFO: QUIBDÓ written as EPW
+INFO: TUNJA written as EPW
+INFO: POPAYÁN written as EPW
+INFO: FLORENCIA written as EPW
+INFO: PASTO written as EPW
+INFO: SANTA MARTA written as EPW
+INFO: VALLEDUPAR written as EPW
+INFO: MEDELLÍN written as EPW
+INFO: ARAUCA written as EPW
+INFO: MITU written as EPW
+INFO: MOCOA written as EPW
+INFO: YOPAL written as EPW
+INFO: MANIZALES written as EPW

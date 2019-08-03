@@ -42,6 +42,29 @@ namespace DataETL
             //insertManyRecord("cityRegionGroups", cityRegionGroup);
 
         }
+        public void printCityRegionGroups()
+        {
+            db = MongoTools.connect("mongodb://localhost", "climaColombia");
+            var coll = db.GetCollection<StationGroup>("cityRegionGroups");
+            allRegionGroups = coll.Find(FilterDefinition<StationGroup>.Empty).ToList();
+            StreamWriter sw = new StreamWriter("regiongroups.csv");
+            foreach(StationGroup sg in allRegionGroups)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append(sg.name + ",");
+                foreach(int code in sg.stationcodes)
+                {
+                    sb.Append(code + ",");
+                }
+                sw.WriteLine(sb.ToString());
+            }
+            sw.Close();
+            cities = MapTools.readCities();
+            
+
+            stations = StationGrouping.getAllStationsFromDB(db);
+            JSONout.writeGroup(allRegionGroups, @"C:\Users\Admin\Documents\projects\IAPP\climaColombiaOrg\tools\cityGroups\cityregiongroups.json", stations, cities);
+        }
         public void insertManyRecord(string collectionName, List<StationGroup> groups)
         {
             var collection = db.GetCollection<StationGroup>(collectionName);

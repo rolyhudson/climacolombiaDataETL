@@ -1,8 +1,0 @@
-INFO: process launched
-INFO: starting batch of synth years
-INFO: found ref data for CARTAGENA synth year
-INFO: calculated hourly values for CARTAGENA synth year
-INFO: calculated data for CARTAGENA synth year
-WARN: PR holefilling error between 01/01/2001 00:00:00 and 01/01/2001 00:00:00
-INFO: hole filling succeeded for CARTAGENA synth year
-INFO: CARTAGENA synth year was stored in DB

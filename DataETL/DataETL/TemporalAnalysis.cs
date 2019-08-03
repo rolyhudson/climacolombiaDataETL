@@ -44,19 +44,14 @@ namespace DataETL
         public void temporalCityGroupMonthly()
         {
             stations = StationGrouping.getAllStationsFromDB(db);
-            var coll = db.GetCollection<StationGroup>("cityGroups");
+            var coll = db.GetCollection<StationGroup>("cityRegionGroups");
             stationsByCity = coll.Find(FilterDefinition<StationGroup>.Empty).ToList();
             foreach (StationGroup cityGroup in stationsByCity)
             {
                 weatherCollections = getStationsColNames(cityGroup);
-                if (cityGroup.name == "SANTA FE DE BOGOTÁ")
-                {
+               
                     cityMonthlyGraphs(cityGroup);
-                }
-                else
-                {
-                    //cityMonthlyGraphs(cityGroup);
-                }
+                
             }
         }
         private List<string> getIncludedVariables()
@@ -180,7 +175,7 @@ namespace DataETL
                     }
                 }
             }
-            saveGraphic(zgc, master, @"D:\WORK\piloto\Climate\groupMonthlyScatterCharts\" + title+".jpeg");
+            saveGraphic(zgc, master, @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\groupMonthlyScatterCharts\" + title+".jpeg");
         }
        
 
@@ -245,7 +240,7 @@ namespace DataETL
             {
                 master.SetLayout(g, PaneLayout.SingleColumn);
             }
-            master.GetImage().Save(@"D:\WORK\piloto\Climate\IDEAM\DailyAnalysisTS_RS\" + filename + ".jpeg", System.Drawing.Imaging.ImageFormat.Jpeg);
+            master.GetImage().Save(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\IDEAM\DailyAnalysisTS_RS\" + filename + ".jpeg", System.Drawing.Imaging.ImageFormat.Jpeg);
         }
         private async Task testDaysGraphic( List<string> weatherCollections, string filename)
         {

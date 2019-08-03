@@ -60,7 +60,7 @@ namespace DataETL
         public static void writeGroup(List<StationGroup> groups, string file,List<Station> stations, List<City> cities)
         {
             string propname = "cities";
-            if(file.Contains("region")) propname = "regions";
+            //if(file.Contains("region")) propname = "regions";
            
             StreamWriter sw = new StreamWriter(file);
             using (JsonTextWriter writer = new JsonTextWriter(sw))

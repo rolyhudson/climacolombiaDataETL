@@ -60,7 +60,7 @@ namespace DataETL
         {
             StringBuilder line = new StringBuilder();
             line.Append("DESIGN CONDITIONS,");
-            this.epw.WriteLine(line);
+            
             line.Append(",");//number conditions
             line.Append(",");//source
             line.Append("Heating,");//
@@ -73,7 +73,7 @@ namespace DataETL
         private void epwTypicalExtreme()
         {
             StringBuilder line = new StringBuilder();
-            line.Append("TYPICAL / EXTREME PERIODS,");
+            line.Append("TYPICAL/EXTREME PERIODS,");
             line.Append(",");//field Number of Typical/ Extreme Periods
             line.Append(",");//field Typical/ Extreme Period 1 Name
             line.Append(",");//field Typical/ Extreme Period 1 Type
@@ -126,7 +126,7 @@ namespace DataETL
         private void epwHolsDaylightSaving()
         {
             StringBuilder line = new StringBuilder();
-            line.Append("HOLIDAYS / DAYLIGHT SAVING,");
+            line.Append("HOLIDAYS/DAYLIGHT SAVING,");
             line.Append(",");//A1, \field LeapYear Observed\type choice\key Yes\key No\note Yes if Leap Year will be observed for this file\note No if Leap Year days (29 Feb) should be ignored in this file
             line.Append(",");//A2, \field Daylight Saving Start Day
             line.Append(",");//A3, \field Daylight Saving End Day
@@ -321,7 +321,7 @@ namespace DataETL
                 line.Append("99,");//N31, \field Days Since Last Snowfall\missing 99
                 line.Append("999,");//N32, \field Albedo\missing 999
                 line.Append(getValue("PR", currentHr) + ",");//N33, \field Liquid Precipitation Depth\units mm\missing 999
-                line.Append("99,");//N34; \field Liquid Precipitation Quantityunits hr\missing 99
+                line.Append("99");//N34; \field Liquid Precipitation Quantityunits hr\missing 99
                 this.epw.WriteLine(line);
                 line.Clear();
                

@@ -50,11 +50,12 @@ namespace DataETL
         }
         private void visualiseEpws(object sender, EventArgs e)
         {
-            epwVisualiser.EpwImageMaker images = new epwVisualiser.EpwImageMaker(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\epw");
+            epwVisualiser.EpwImageMaker images = new epwVisualiser.EpwImageMaker(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\epw\Sumapaz");
         }
         private void syntheticYear(object sender, EventArgs e)
         {
             CityYearBuilder cyb = new CityYearBuilder();
+            cyb.syntheticYearBatchFixer("medianHour");
             //cyb.syntheticYearBatch("medianHour");
             //cyb.syntheticYearDataPrep("regionGroups");
             //cyb.syntheticYearBatch("meanHour");
@@ -143,6 +144,11 @@ namespace DataETL
             MonthlySummary ds = new MonthlySummary();
             ds.printCityMeta();
         }
+        private void printCityRegions(object sender, EventArgs e)
+        {
+            CityYearFixer cyf = new CityYearFixer();
+            cyf.printCityRegionGroups();
+        }
         private void outputAnnualSummary(object sender, EventArgs e)
         {
             AnnualSummary ds = new AnnualSummary();
@@ -183,6 +189,31 @@ namespace DataETL
             SQLconnector sqlConn = new SQLconnector();
             sqlConn.connect();
 
+        }
+
+        private void flexiQ(object sender, EventArgs e)
+        {
+            //so far a litle hack 
+            FlexiQuery fq = new FlexiQuery();
+            double[] lonlat = { -74.301720, 3.858849};
+            fq.ByDistanceFromLatLong(lonlat,3500);
+            //fq.writeToEPW();
+        }
+
+        private void button27_Click(object sender, EventArgs e)
+        {
+            EPWsummary epwS = new EPWsummary();
+            var files = new string[]{
+            @"C:\Users\Admin\Downloads\COL_CUN_Bogota-Eldorado.Intl.AP.802220_TMYx.2003-2017\COL_CUN_Bogota-Eldorado.Intl.AP.802220_TMYx.2003-2017.epw",
+            @"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\epw\SANTA FE DE BOGOTÁ_synthYear_rc2.epw"
+            };
+            epwS.getComparisons(files);
+        }
+
+        private void button28_Click(object sender, EventArgs e)
+        {
+
+            epwVisualiser.EpwImageMaker epwimages = new epwVisualiser.EpwImageMaker(@"C:\Users\Admin\Documents\projects\IAPP\piloto\Climate\epw\rc_3");
         }
     }
 }

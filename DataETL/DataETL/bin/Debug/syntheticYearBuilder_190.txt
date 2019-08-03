@@ -1,0 +1,7 @@
+INFO: process launched
+INFO: starting batch of synth years
+INFO: found ref data for MITU synth year
+INFO: calculating hourly values for MITU synth year
+INFO: calculated data for MITU synth year
+INFO: hole filling succeeded for MITU synth year
+INFO: MITU synth year was stored in DB

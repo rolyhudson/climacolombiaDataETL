@@ -1,0 +1,7 @@
+INFO: process launched
+INFO: sumapaz data prep completed
+INFO: found ref data for sumapaz synth year
+INFO: calculated hourly values for sumapaz synth year
+INFO: calculated data for sumapaz synth year
+INFO: hole filling succeeded for sumapaz synth year
+INFO: sumapaz synth year was stored in DB

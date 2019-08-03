@@ -117,7 +117,7 @@ namespace DataETL
             List<string> collNames = MongoTools.collectionNames(db);
             foreach (string collection in collNames)
             {
-                if (collection.Contains("averaged"))
+                if (collection.Contains("sumapaz"))
                 {
                     //var coll = db.GetCollection<BsonDocument>(collection);
                     //var t = coll.Find(new BsonDocument()).ToList();

@@ -1,2 +1,0 @@
-INFO: process launched
-INFO: preparing to read syntheYearsFromDB

@@ -1,3 +1,0 @@
-INFO: process launched
-INFO: preparing to read syntheYearsFromDB
-INFO: CARTAGENA written as EPW

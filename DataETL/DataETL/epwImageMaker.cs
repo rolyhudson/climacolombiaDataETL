@@ -313,7 +313,7 @@ namespace epwVisualiser
                     this.nullValue = 99;
                     break;
                 case "PR":
-                    this.max = 60;
+                    this.max = 4;
                     this.min = 0;
                     this.nullValue = 999;
                     break;

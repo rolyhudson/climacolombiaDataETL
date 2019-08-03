@@ -1,0 +1,3 @@
+INFO: process launched
+INFO: starting batch of synth years
+INFO: found ref data for MITU synth year

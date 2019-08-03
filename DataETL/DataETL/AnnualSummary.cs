@@ -106,7 +106,9 @@ namespace DataETL
         public void outputAnnual()
         {
             //this could select the most recent annual
-            var coll = db.GetCollection<StationSummary>("annualStationSummary_2018_7_3_14_6_5");
+            var names = MongoTools.collectionNames(db);
+            var summ = names.FindAll(c => c.Contains("annualStationSummary"));
+            var coll = db.GetCollection<StationSummary>("annualStationSummary_2019_6_17_17_16_41");
            List<StationSummary> stations = coll.Find(FilterDefinition<StationSummary>.Empty).ToList();
             StreamWriter sw = new StreamWriter("annualSummary.csv");
             sw.WriteLine("code,name,source,TS,HR,PR,VV,DV,NUB");

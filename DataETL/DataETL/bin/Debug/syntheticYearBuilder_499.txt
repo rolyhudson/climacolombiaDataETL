@@ -1,0 +1,5 @@
+INFO: process launched
+INFO: preparing to read synthYearsFromDB
+INFO: BARRANQUILLA written as EPW
+INFO: CARTAGENA written as EPW
+INFO: SANTA FE DE BOGOTÁ written as EPW

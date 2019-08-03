@@ -1,0 +1,3 @@
+INFO: process launched
+INFO: preparing to read synthYearsFromDB
+INFO: LETICIA written as EPW

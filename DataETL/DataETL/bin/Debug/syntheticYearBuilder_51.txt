@@ -1,0 +1,2 @@
+INFO: process launched
+INFO: sumapaz written as EPW

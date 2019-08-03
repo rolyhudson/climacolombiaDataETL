@@ -1,0 +1,28 @@
+INFO: process launched
+INFO: preparing to read synthYearsFromDB
+WARN: PUERTO CARREÑO synth year could not be read from DB
+WARN: CÚCUTA synth year could not be read from DB
+WARN: BUCARAMANGA synth year could not be read from DB
+WARN: ARMENIA synth year could not be read from DB
+WARN: VILLAVICENCIO synth year could not be read from DB
+WARN: PEREIRA synth year could not be read from DB
+WARN: IBAGUÉ synth year could not be read from DB
+WARN: NEIVA synth year could not be read from DB
+WARN: SAN JOSÉ DEL GUAVIARE synth year could not be read from DB
+WARN: SINCELEJO synth year could not be read from DB
+WARN: MONTERÍA synth year could not be read from DB
+WARN: INÍRIDA synth year could not be read from DB
+WARN: CALI synth year could not be read from DB
+WARN: QUIBDÓ synth year could not be read from DB
+WARN: TUNJA synth year could not be read from DB
+WARN: POPAYÁN synth year could not be read from DB
+WARN: FLORENCIA synth year could not be read from DB
+WARN: PASTO synth year could not be read from DB
+WARN: SANTA MARTA synth year could not be read from DB
+WARN: VALLEDUPAR synth year could not be read from DB
+WARN: MEDELLÍN synth year could not be read from DB
+WARN: ARAUCA synth year could not be read from DB
+INFO: MITU written as EPW
+WARN: MOCOA synth year could not be read from DB
+WARN: YOPAL synth year could not be read from DB
+WARN: MANIZALES synth year could not be read from DB
